@@ -1,4 +1,4 @@
-/*  DynamicEconomy: A plugin for the Sponge API
+/*  Dynamic Shops: A plugin for the Sponge API
  *   Copyright (C) 2019 rm2023
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.rm2023.shop;
+package io.github.rm2023.dynamicshops.shop;
 
 import java.math.BigDecimal;
 
@@ -25,7 +25,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.service.economy.account.Account;
 
-import io.github.rm2023.util.Util;
+import io.github.rm2023.dynamicshops.util.Util;
 
 public class ItemShop extends Shop {
 

@@ -1,4 +1,4 @@
-/*  DynamicEconomy: A plugin for the Sponge API
+/*  Dynamic Shops: A plugin for the Sponge API
  *   Copyright (C) 2019 rm2023
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -15,14 +15,14 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.rm2023.data;
+package io.github.rm2023.dynamicshops.data;
 
 import java.util.LinkedList;
 
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import io.github.rm2023.shop.Shop;
+import io.github.rm2023.dynamicshops.shop.Shop;
 
 public class ShopData {
     LinkedList<Shop> shopList;

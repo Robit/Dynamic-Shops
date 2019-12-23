@@ -1,4 +1,4 @@
-/*  DynamicEconomy: A plugin for the Sponge API
+/*  Dynamic Shops: A plugin for the Sponge API
  *   Copyright (C) 2019 rm2023
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -15,16 +15,8 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.rm2023;
+package io.github.rm2023.dynamicshops.commands;
 
-import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
-
-import com.google.inject.Inject;
-
-@Plugin(id = "dynamiceconomy", name = "DynamicEconomy", version = "0.0.0", description = "Provides admin shops which follow a logistic function for price setting.")
-public class DynamicEconomy {
-    @Inject
-    public static PluginContainer container;
+public class MainCommand {
 
 }

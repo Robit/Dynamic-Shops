@@ -1,4 +1,4 @@
-/*  DynamicEconomy: A plugin for the Sponge API
+/*  Dynamic Shops: A plugin for the Sponge API
  *   Copyright (C) 2019 rm2023
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -15,8 +15,8 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.rm2023.commands;
+package io.github.rm2023.dynamicshops.commands;
 
-public class CreateStaticShopCommand {
+public class SetPriceCommand {
 
 }

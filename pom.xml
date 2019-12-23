@@ -6,9 +6,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <!-- Don't forget to change all necessary values to your own! -->
     <groupId>io.github.rm2023</groupId>
-    <artifactId>dynamiceconomy</artifactId>
+    <artifactId>dynamicshops</artifactId>
 
-    <name>DynamicEconomy</name>
+    <name>Dynamic Shops</name>
     <version>0.0.0</version>
 
     <repositories>
