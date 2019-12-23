@@ -52,8 +52,7 @@ public class CommandShop extends Shop {
 	    Util.message(p, "Error while withdrawing funds. Please contact an admin.");
 	    return false;
 	}
-	logger.debug(Sponge.getCommandManager()
-		.process(Sponge.getServer().getConsole(), command.replaceAll("@p", p.getName())).toString());
+	logger.debug(Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command.replaceAll("@p", p.getName())).toString());
 	offset += 1;
 	return true;
     }

@@ -53,8 +53,7 @@ public abstract class Shop {
 	canSell = false;
     }
 
-    public Shop(String name, Location<World> location, double min, double max, double k, boolean canBuy,
-	    boolean canSell) {
+    public Shop(String name, Location<World> location, double min, double max, double k, boolean canBuy, boolean canSell) {
 	this.name = name;
 	this.location = location;
 	this.min = min;
@@ -74,15 +73,16 @@ public abstract class Shop {
 	return new String(name);
     }
 
+    public void setLocation(Location<World> location) {
+	this.location = location;
+    }
+
     public Location<World> getLocation() {
 	return location;
     }
 
     public double getPrice() {
-	return ((double) (Math
-		.round((min + ((min + max) / (1 + Math.pow(Math.E, -1 * k * (offset / (0.5 + max + min))))))
-			* Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits()))))
-		/ Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits());
+	return ((double) (Math.round((min + ((min + max) / (1 + Math.pow(Math.E, -1 * k * (offset / (0.5 + max + min)))))) * Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits())))) / Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits());
     }
 
     public boolean setPrice(double price) {
@@ -107,18 +107,15 @@ public abstract class Shop {
 		updateSign();
 		Util.message(p, "Purchase Successful.");
 		if (oldPrice != getPrice()) {
-		    Util.message(p,
-			    "The price has changed to " + economy.getDefaultCurrency().getSymbol() + getPrice());
+		    Util.message(p, "The price has changed to " + economy.getDefaultCurrency().getSymbol() + getPrice());
 		}
 		return true;
 	    } else {
-		logger.debug(p.getName() + " attempted to buy from the shop " + getName()
-			+ " but failed due to a buy operation error");
+		logger.debug(p.getName() + " attempted to buy from the shop " + getName() + " but failed due to a buy operation error");
 		return false;
 	    }
 	}
-	logger.debug(p.getName() + " attempted to buy from the shop " + getName()
-		+ " but failed either because they did not have permission or because the shop cannot be bought from.");
+	logger.debug(p.getName() + " attempted to buy from the shop " + getName() + " but failed either because they did not have permission or because the shop cannot be bought from.");
 	return false;
     }
 
@@ -130,18 +127,15 @@ public abstract class Shop {
 		updateSign();
 		Util.message(p, "Sell Successful.");
 		if (oldPrice != getPrice()) {
-		    Util.message(p,
-			    "The price has changed to " + economy.getDefaultCurrency().getSymbol() + getPrice());
+		    Util.message(p, "The price has changed to " + economy.getDefaultCurrency().getSymbol() + getPrice());
 		}
 		return true;
 	    } else {
-		logger.debug(p.getName() + " attempted to sell to the shop " + getName()
-			+ " but failed due to a sell operation error");
+		logger.debug(p.getName() + " attempted to sell to the shop " + getName() + " but failed due to a sell operation error");
 		return false;
 	    }
 	}
-	logger.debug(p.getName() + " attempted to sell to the shop " + getName()
-		+ " but failed either because they did not have permission or because the shop cannot be sold to.");
+	logger.debug(p.getName() + " attempted to sell to the shop " + getName() + " but failed either because they did not have permission or because the shop cannot be sold to.");
 	return false;
     }
 

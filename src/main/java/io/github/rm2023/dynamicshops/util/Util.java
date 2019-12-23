@@ -37,18 +37,10 @@ public class Util {
     }
 
     public static boolean withdraw(Account playerAccount, EconomyService economy, BigDecimal price, String reason) {
-	return playerAccount
-		.withdraw(economy.getDefaultCurrency(), price,
-			Cause.builder().append(reason).build(
-				EventContext.builder().add(EventContextKeys.PLUGIN, DynamicShops.container).build()))
-		.getResult() == ResultType.SUCCESS;
+	return playerAccount.withdraw(economy.getDefaultCurrency(), price, Cause.builder().append(reason).build(EventContext.builder().add(EventContextKeys.PLUGIN, DynamicShops.container).build())).getResult() == ResultType.SUCCESS;
     }
 
     public static boolean deposit(Account playerAccount, EconomyService economy, BigDecimal price, String reason) {
-	return playerAccount
-		.deposit(economy.getDefaultCurrency(), price,
-			Cause.builder().append(reason).build(
-				EventContext.builder().add(EventContextKeys.PLUGIN, DynamicShops.container).build()))
-		.getResult() == ResultType.SUCCESS;
+	return playerAccount.deposit(economy.getDefaultCurrency(), price, Cause.builder().append(reason).build(EventContext.builder().add(EventContextKeys.PLUGIN, DynamicShops.container).build())).getResult() == ResultType.SUCCESS;
     }
 }

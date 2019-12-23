@@ -5,8 +5,7 @@ import org.spongepowered.api.event.block.InteractBlockEvent;
 
 public class ShopSell {
     @Listener
-    public void ShopSellEvent(InteractBlockEvent.Primary event)
-    {
-	
+    public void ShopSellEvent(InteractBlockEvent.Primary event) {
+
     }
 }

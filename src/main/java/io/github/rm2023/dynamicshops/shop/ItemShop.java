@@ -79,10 +79,8 @@ public class ItemShop extends Shop {
 	    return false;
 	}
 	if (!Util.deposit(playerAccount, economy, price, getName())) {
-	    Util.message(p, "Error while depositing " + getPrice()
-		    + " into account. Please screenshot this and contact an admin for compensation. Admin, there should be an ERROR in the server log corrosponding to this failure. Please verify this, compensate the player, and contact the dev for support.");
-	    logger.error("Attempting to put " + getPrice() + " into " + p.getName()
-		    + "'s account failed! Please verify that your economy plugin is working and contact the dev!");
+	    Util.message(p, "Error while depositing " + getPrice() + " into account. Please screenshot this and contact an admin for compensation. Admin, there should be an ERROR in the server log corrosponding to this failure. Please verify this, compensate the player, and contact the dev for support.");
+	    logger.error("Attempting to put " + getPrice() + " into " + p.getName() + "'s account failed! Please verify that your economy plugin is working and contact the dev!");
 	    return false;
 	}
 	return true;
