@@ -26,55 +26,45 @@ import io.github.rm2023.shop.Shop;
 
 public class ShopData {
     LinkedList<Shop> shopList;
-    public ShopData()
-    {
-	//TODO - Add stuff to load shops from a database
+
+    public ShopData() {
+	// TODO - Add stuff to load shops from a database
     }
-    
-    public boolean addShop(Shop shop)
-    {
-	if(shopList.add(shop))
-	{
-	    save(true);
-	    return true;
-	}
-	return false;
-    }
-    
-    public boolean removeShop(Shop shop)
-    {
-	if(shopList.remove(shop))
-	{
+
+    public boolean addShop(Shop shop) {
+	if (shopList.add(shop)) {
 	    save(true);
 	    return true;
 	}
 	return false;
     }
 
-    public boolean removeShop(Location<World> location)
-    {
+    public boolean removeShop(Shop shop) {
+	if (shopList.remove(shop)) {
+	    save(true);
+	    return true;
+	}
+	return false;
+    }
+
+    public boolean removeShop(Location<World> location) {
 	Shop toRemove = getShop(location);
-	if(toRemove != null)
-	{
+	if (toRemove != null) {
 	    return removeShop(toRemove);
 	}
 	return true;
     }
-    
-    public Shop getShop(Location<World> location)
-    {
-	for(Shop shop: shopList)
-	{
-	    if(shop.getLocation() != null && shop.getLocation().equals(location))
-	    {
+
+    public Shop getShop(Location<World> location) {
+	for (Shop shop : shopList) {
+	    if (shop.getLocation() != null && shop.getLocation().equals(location)) {
 		return shop;
 	    }
 	}
 	return null;
     }
-    
-    public void save(boolean force)
-    {
-	//TODO: Something to save to a database
+
+    public void save(boolean force) {
+	// TODO: Something to save to a database
     }
 }

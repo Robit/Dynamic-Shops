@@ -26,5 +26,5 @@ import com.google.inject.Inject;
 public class DynamicEconomy {
     @Inject
     public static PluginContainer container;
-    
+
 }

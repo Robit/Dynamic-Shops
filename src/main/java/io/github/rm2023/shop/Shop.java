@@ -32,7 +32,7 @@ import io.github.rm2023.util.Util;
 public abstract class Shop {
     static public EconomyService economy = null;
     static public Logger logger = null;
-    
+
     protected String name;
     protected Location<World> location;
     protected double offset;
@@ -41,9 +41,8 @@ public abstract class Shop {
     protected double k;
     protected boolean canBuy;
     protected boolean canSell;
-    
-    public Shop()
-    {
+
+    public Shop() {
 	name = "UNDEFINED";
 	location = null;
 	offset = 0;
@@ -53,9 +52,9 @@ public abstract class Shop {
 	canBuy = false;
 	canSell = false;
     }
-    
-    public Shop(String name, Location<World> location, double min, double max, double k, boolean canBuy, boolean canSell)
-    {
+
+    public Shop(String name, Location<World> location, double min, double max, double k, boolean canBuy,
+	    boolean canSell) {
 	this.name = name;
 	this.location = location;
 	this.min = min;
@@ -63,151 +62,130 @@ public abstract class Shop {
 	this.k = k;
 	this.canBuy = canBuy;
 	this.canSell = canSell;
-	if(!canBuy)
-	{
+	if (!canBuy) {
 	    setPrice(min);
 	}
-	if(!canSell)
-	{
+	if (!canSell) {
 	    setPrice(max);
 	}
     }
-    
-    public String getName()
-    {
+
+    public String getName() {
 	return new String(name);
     }
-    
-    public Location<World> getLocation()
-    {
+
+    public Location<World> getLocation() {
 	return location;
     }
-    
-    public double getPrice()
-    {
-	return ((double) (Math.round((min + ((min + max) / (1 + Math.pow(Math.E, -1 * k * (offset / (0.5 + max + min)))))) * Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits())))) / Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits());
+
+    public double getPrice() {
+	return ((double) (Math
+		.round((min + ((min + max) / (1 + Math.pow(Math.E, -1 * k * (offset / (0.5 + max + min))))))
+			* Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits()))))
+		/ Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits());
     }
-    
-    public boolean setPrice(double price)
-    {
-	if(price < min || price > max)
-	{
+
+    public boolean setPrice(double price) {
+	if (price < min || price > max) {
 	    return false;
 	}
-	//If the price is with rounding range of min or max, set the price to be rounding range away from the boundary
+	// If the price is with rounding range of min or max, set the price to be
+	// rounding range away from the boundary
 	price = Math.max(price, (1 + Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits())) * min);
 	price = Math.min(price, (1 - Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits())) * max);
-	//Maaaaaaath
+	// Maaaaaaath
 	price = (price + min) / (max - min);
 	offset = Math.log(price / (1 - price)) / k;
 	return true;
     }
-    
-    public boolean buy(Player p)
-    {
-	if(canBuy && p.hasPermission("dynamiceconomy.buy." + getName()))
-	{
-	   double oldPrice = getPrice();
-	   if(buyOperation(p))
-	   {
-	       logger.info(p.getName() + " bought from the shop the shop " + getName());
-	       updateSign();
-	       Util.message(p, "Purchase Successful.");
-	       if(oldPrice != getPrice())
-	       {
-		   Util.message(p, "The price has changed to " + economy.getDefaultCurrency().getSymbol() + getPrice());
-	       }
-	       return true;
-	   }
-	   else
-	   {
-	       logger.debug(p.getName() + " attempted to buy from the shop " + getName() + " but failed due to a buy operation error");
-	       return false;
-	   }
+
+    public boolean buy(Player p) {
+	if (canBuy && p.hasPermission("dynamiceconomy.buy." + getName())) {
+	    double oldPrice = getPrice();
+	    if (buyOperation(p)) {
+		logger.info(p.getName() + " bought from the shop the shop " + getName());
+		updateSign();
+		Util.message(p, "Purchase Successful.");
+		if (oldPrice != getPrice()) {
+		    Util.message(p,
+			    "The price has changed to " + economy.getDefaultCurrency().getSymbol() + getPrice());
+		}
+		return true;
+	    } else {
+		logger.debug(p.getName() + " attempted to buy from the shop " + getName()
+			+ " but failed due to a buy operation error");
+		return false;
+	    }
 	}
-	logger.debug(p.getName() + " attempted to buy from the shop " + getName() + " but failed either because they did not have permission or because the shop cannot be bought from.");
+	logger.debug(p.getName() + " attempted to buy from the shop " + getName()
+		+ " but failed either because they did not have permission or because the shop cannot be bought from.");
 	return false;
     }
-    
-    public boolean sell(Player p)
-    {
-	if(canSell && p.hasPermission("dynamiceconomy.sell." + getName()))
-	{
-	   double oldPrice = getPrice();
-	   if(sellOperation(p))
-	   {
-	       logger.info(p.getName() + " sold to the shop " + getName());
-	       updateSign();
-	       Util.message(p, "Sell Successful.");
-	       if(oldPrice != getPrice())
-	       {
-		   Util.message(p, "The price has changed to " + economy.getDefaultCurrency().getSymbol() + getPrice());
-	       }
-	       return true;
-	   }
-	   else
-	   {
-	       logger.debug(p.getName() + " attempted to sell to the shop " + getName() + " but failed due to a sell operation error");
-	       return false;
-	   }
+
+    public boolean sell(Player p) {
+	if (canSell && p.hasPermission("dynamiceconomy.sell." + getName())) {
+	    double oldPrice = getPrice();
+	    if (sellOperation(p)) {
+		logger.info(p.getName() + " sold to the shop " + getName());
+		updateSign();
+		Util.message(p, "Sell Successful.");
+		if (oldPrice != getPrice()) {
+		    Util.message(p,
+			    "The price has changed to " + economy.getDefaultCurrency().getSymbol() + getPrice());
+		}
+		return true;
+	    } else {
+		logger.debug(p.getName() + " attempted to sell to the shop " + getName()
+			+ " but failed due to a sell operation error");
+		return false;
+	    }
 	}
-	logger.debug(p.getName() + " attempted to sell to the shop " + getName() + " but failed either because they did not have permission or because the shop cannot be sold to.");
+	logger.debug(p.getName() + " attempted to sell to the shop " + getName()
+		+ " but failed either because they did not have permission or because the shop cannot be sold to.");
 	return false;
     }
-    
-    public void setSign()
-    {
+
+    public void setSign() {
 	TileEntity signTile = location.getTileEntity().orElse(null);
-	if(signTile == null || !signTile.get(SignData.class).isPresent())
-	{
+	if (signTile == null || !signTile.get(SignData.class).isPresent()) {
 	    logger.error("Could not set the sign of shop " + getName() + ". It seems like it isn't a sign entity!");
 	    return;
 	}
 	SignData data = signTile.get(SignData.class).get();
 	data.setElement(0, Text.builder("[" + getName() + "]").color(TextColors.BLUE).build());
-	if(canBuy)
-	{
-	    if(canSell)
-	    {
+	if (canBuy) {
+	    if (canSell) {
 		data.setElement(1, Text.of("Buy/Sell"));
-	    }
-	    else
-	    {
+	    } else {
 		data.setElement(1, Text.of("Buy"));
 	    }
 	} else {
-	    if(canSell)
-	    {
+	    if (canSell) {
 		data.setElement(1, Text.of("Sell"));
-	    }
-	    else
-	    {
+	    } else {
 		data.setElement(1, Text.of("???"));
 	    }
 	}
 	data.setElement(2, Text.of(economy.getDefaultCurrency().getSymbol().toString() + getPrice()));
-	if(!signTile.offer(data).isSuccessful())
-	{
+	if (!signTile.offer(data).isSuccessful()) {
 	    logger.error("Could not set the sign of shop " + getName() + ". Data transaction failed");
 	}
     }
-    
-    public void updateSign()
-    {
+
+    public void updateSign() {
 	TileEntity signTile = location.getTileEntity().orElse(null);
-	if(signTile == null || !signTile.get(SignData.class).isPresent())
-	{
+	if (signTile == null || !signTile.get(SignData.class).isPresent()) {
 	    logger.error("Could not set the sign of shop " + getName() + ". It seems like it isn't a sign entity!");
 	    return;
 	}
 	SignData data = signTile.get(SignData.class).get();
 	data.setElement(2, Text.of(economy.getDefaultCurrency().getSymbol().toString() + getPrice()));
-	if(!signTile.offer(data).isSuccessful())
-	{
+	if (!signTile.offer(data).isSuccessful()) {
 	    logger.error("Could not set the sign of shop " + getName() + ". Data transaction failed");
 	}
     }
-    
+
     protected abstract boolean buyOperation(Player p);
+
     protected abstract boolean sellOperation(Player p);
 }

@@ -29,34 +29,31 @@ import io.github.rm2023.util.Util;
 
 public class CommandShop extends Shop {
     protected String command;
-    
-    public CommandShop()
-    {
+
+    public CommandShop() {
 	super();
 	this.command = "";
     }
-    
-    public CommandShop(String name, Location<World> location, double min, double max, double k, String command)
-    {
+
+    public CommandShop(String name, Location<World> location, double min, double max, double k, String command) {
 	super(name, location, min, max, k, true, false);
 	this.command = command;
     }
-    
+
     @Override
     protected boolean buyOperation(Player p) {
 	Account playerAccount = economy.getOrCreateAccount(p.getUniqueId()).orElse(null);
 	BigDecimal price = BigDecimal.valueOf(getPrice());
-	if(playerAccount == null || playerAccount.getBalance(economy.getDefaultCurrency()).compareTo(price) > 0)
-	{
+	if (playerAccount == null || playerAccount.getBalance(economy.getDefaultCurrency()).compareTo(price) > 0) {
 	    Util.message(p, "You don't have enough money to purchase this!");
 	    return false;
 	}
-	if(!Util.withdraw(playerAccount, economy, price, getName()))
-	{
+	if (!Util.withdraw(playerAccount, economy, price, getName())) {
 	    Util.message(p, "Error while withdrawing funds. Please contact an admin.");
 	    return false;
 	}
-	logger.debug(Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command.replaceAll("@p", p.getName())).toString());
+	logger.debug(Sponge.getCommandManager()
+		.process(Sponge.getServer().getConsole(), command.replaceAll("@p", p.getName())).toString());
 	offset += 1;
 	return true;
     }
