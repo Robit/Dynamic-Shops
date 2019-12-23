@@ -116,7 +116,7 @@ public abstract class Shop {
     }
 
     public boolean buy(Player p) {
-        if (canBuy && p.hasPermission("dynamicDynamicShops.economy.buy." + getName())) {
+        if (canBuy && p.hasPermission("dynamicshops.buy." + getName())) {
             double oldPrice = getPrice();
             if (buyOperation(p)) {
                 DynamicShops.logger.info(p.getName() + " bought from the shop the shop " + getName());
@@ -137,7 +137,7 @@ public abstract class Shop {
     }
 
     public boolean sell(Player p) {
-        if (canSell && p.hasPermission("dynamicDynamicShops.economy.sell." + getName())) {
+        if (canSell && p.hasPermission("dynamicshops.sell." + getName())) {
             double oldPrice = getPrice();
             if (sellOperation(p)) {
                 DynamicShops.logger.info(p.getName() + " sold to the shop " + getName());
