@@ -17,8 +17,6 @@
 
 package io.github.rm2023.shop;
 
-import java.math.BigDecimal;
-
 import org.slf4j.Logger;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
@@ -28,6 +26,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+
+import io.github.rm2023.util.Util;
 
 public abstract class Shop {
     static public EconomyService economy = null;
@@ -42,6 +42,37 @@ public abstract class Shop {
     protected boolean canBuy;
     protected boolean canSell;
     
+    public Shop()
+    {
+	name = "UNDEFINED";
+	location = null;
+	offset = 0;
+	min = 0;
+	max = 0;
+	k = 0;
+	canBuy = false;
+	canSell = false;
+    }
+    
+    public Shop(String name, Location<World> location, double min, double max, double k, boolean canBuy, boolean canSell)
+    {
+	this.name = name;
+	this.location = location;
+	this.min = min;
+	this.max = max;
+	this.k = k;
+	this.canBuy = canBuy;
+	this.canSell = canSell;
+	if(!canBuy)
+	{
+	    setPrice(min);
+	}
+	if(!canSell)
+	{
+	    setPrice(max);
+	}
+    }
+    
     public String getName()
     {
 	return new String(name);
@@ -52,12 +83,7 @@ public abstract class Shop {
 	return location;
     }
     
-    public BigDecimal getPrice()
-    {
-	return BigDecimal.valueOf(min + ((min + max) / (1 + Math.pow(Math.E, -1 * k * (offset / (0.5 + max + min))))));
-    }
-    
-    public double getRoundedPrice()
+    public double getPrice()
     {
 	return ((double) (Math.round((min + ((min + max) / (1 + Math.pow(Math.E, -1 * k * (offset / (0.5 + max + min)))))) * Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits())))) / Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits());
     }
@@ -81,16 +107,21 @@ public abstract class Shop {
     {
 	if(canBuy && p.hasPermission("dynamiceconomy.buy." + getName()))
 	{
+	   double oldPrice = getPrice();
 	   if(buyOperation(p))
 	   {
 	       logger.info(p.getName() + " bought from the shop the shop " + getName());
 	       updateSign();
+	       Util.message(p, "Purchase Successful.");
+	       if(oldPrice != getPrice())
+	       {
+		   Util.message(p, "The price has changed to " + economy.getDefaultCurrency().getSymbol() + getPrice());
+	       }
 	       return true;
 	   }
 	   else
 	   {
 	       logger.debug(p.getName() + " attempted to buy from the shop " + getName() + " but failed due to a buy operation error");
-	       updateSign();
 	       return false;
 	   }
 	}
@@ -102,16 +133,21 @@ public abstract class Shop {
     {
 	if(canSell && p.hasPermission("dynamiceconomy.sell." + getName()))
 	{
+	   double oldPrice = getPrice();
 	   if(sellOperation(p))
 	   {
 	       logger.info(p.getName() + " sold to the shop " + getName());
 	       updateSign();
+	       Util.message(p, "Sell Successful.");
+	       if(oldPrice != getPrice())
+	       {
+		   Util.message(p, "The price has changed to " + economy.getDefaultCurrency().getSymbol() + getPrice());
+	       }
 	       return true;
 	   }
 	   else
 	   {
 	       logger.debug(p.getName() + " attempted to sell to the shop " + getName() + " but failed due to a sell operation error");
-	       updateSign();
 	       return false;
 	   }
 	}
@@ -149,7 +185,7 @@ public abstract class Shop {
 		data.setElement(1, Text.of("???"));
 	    }
 	}
-	data.setElement(2, Text.of(economy.getDefaultCurrency().getSymbol().toString() + getRoundedPrice()));
+	data.setElement(2, Text.of(economy.getDefaultCurrency().getSymbol().toString() + getPrice()));
 	if(!signTile.offer(data).isSuccessful())
 	{
 	    logger.error("Could not set the sign of shop " + getName() + ". Data transaction failed");
@@ -165,7 +201,7 @@ public abstract class Shop {
 	    return;
 	}
 	SignData data = signTile.get(SignData.class).get();
-	data.setElement(2, Text.of(economy.getDefaultCurrency().getSymbol().toString() + getRoundedPrice()));
+	data.setElement(2, Text.of(economy.getDefaultCurrency().getSymbol().toString() + getPrice()));
 	if(!signTile.offer(data).isSuccessful())
 	{
 	    logger.error("Could not set the sign of shop " + getName() + ". Data transaction failed");
