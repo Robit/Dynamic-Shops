@@ -57,6 +57,9 @@ public class ShopData {
     }
 
     public Shop getShop(Location<World> location) {
+        if (location == null) {
+            return null;
+        }
         for (Shop shop : shopList) {
             if (shop.getLocation() != null && shop.getLocation().equals(location)) {
                 return shop;

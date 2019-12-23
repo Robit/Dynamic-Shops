@@ -40,10 +40,10 @@ import io.github.rm2023.dynamicshops.listeners.ShopSell;
 @Plugin(id = "dynamicshops", name = "Dynamic Shops", version = "0.0.0", description = "Provides admin shops which follow a logistic function for price setting.")
 public class DynamicShops {
     @Inject
-    private static Logger logger;
+    public static Logger logger;
     @Inject
     public static PluginContainer container;
-    private static ShopData data;
+    public static ShopData data;
     public static EconomyService economy;
 
     @Listener
