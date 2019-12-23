@@ -28,44 +28,44 @@ public class ShopData {
     LinkedList<Shop> shopList;
 
     public ShopData() {
-	shopList = new LinkedList<Shop>();
-	// TODO - Add stuff to load shops from a database
+        shopList = new LinkedList<Shop>();
+        // TODO - Add stuff to load shops from a database
     }
 
     public boolean addShop(Shop shop) {
-	if (shopList.add(shop)) {
-	    save(true);
-	    return true;
-	}
-	return false;
+        if (shopList.add(shop)) {
+            save(true);
+            return true;
+        }
+        return false;
     }
 
     public boolean removeShop(Shop shop) {
-	if (shopList.remove(shop)) {
-	    save(true);
-	    return true;
-	}
-	return false;
+        if (shopList.remove(shop)) {
+            save(true);
+            return true;
+        }
+        return false;
     }
 
     public boolean removeShop(Location<World> location) {
-	Shop toRemove = getShop(location);
-	if (toRemove != null) {
-	    return removeShop(toRemove);
-	}
-	return true;
+        Shop toRemove = getShop(location);
+        if (toRemove != null) {
+            return removeShop(toRemove);
+        }
+        return true;
     }
 
     public Shop getShop(Location<World> location) {
-	for (Shop shop : shopList) {
-	    if (shop.getLocation() != null && shop.getLocation().equals(location)) {
-		return shop;
-	    }
-	}
-	return null;
+        for (Shop shop : shopList) {
+            if (shop.getLocation() != null && shop.getLocation().equals(location)) {
+                return shop;
+            }
+        }
+        return null;
     }
 
     public void save(boolean force) {
-	// TODO: Something to save to a database
+        // TODO: Something to save to a database
     }
 }

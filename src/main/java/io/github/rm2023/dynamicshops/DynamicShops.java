@@ -48,20 +48,20 @@ public class DynamicShops {
 
     @Listener
     public void onStart(GameStartedServerEvent event) {
-	Optional<EconomyService> economyMaybe = Sponge.getServiceManager().getRegistration(EconomyService.class);
-	if (!economyMaybe.isPresent()) {
-	    logger.error("Dynamic Shops REQUIRES an Economy plugin in order to function. Its functionality has been disabled.");
-	    return;
-	}
-	data = new ShopData();
+        Optional<EconomyService> economyMaybe = Sponge.getServiceManager().getRegistration(EconomyService.class);
+        if (!economyMaybe.isPresent()) {
+            logger.error("Dynamic Shops REQUIRES an Economy plugin in order to function. Its functionality has been disabled.");
+            return;
+        }
+        data = new ShopData();
 
-	// Sponge.getCommandManager().register();
+        // Sponge.getCommandManager().register();
 
-	Sponge.getEventManager().registerListeners(this, new ShopAdjust());
-	Sponge.getEventManager().registerListeners(this, new ShopBreak());
-	Sponge.getEventManager().registerListeners(this, new ShopBuy());
-	Sponge.getEventManager().registerListeners(this, new ShopChange());
-	Sponge.getEventManager().registerListeners(this, new ShopCreate());
-	Sponge.getEventManager().registerListeners(this, new ShopSell());
+        Sponge.getEventManager().registerListeners(this, new ShopAdjust());
+        Sponge.getEventManager().registerListeners(this, new ShopBreak());
+        Sponge.getEventManager().registerListeners(this, new ShopBuy());
+        Sponge.getEventManager().registerListeners(this, new ShopChange());
+        Sponge.getEventManager().registerListeners(this, new ShopCreate());
+        Sponge.getEventManager().registerListeners(this, new ShopSell());
     }
 }
