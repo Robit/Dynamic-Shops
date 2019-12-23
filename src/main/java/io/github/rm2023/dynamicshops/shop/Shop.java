@@ -125,6 +125,7 @@ public abstract class Shop {
                 if (oldPrice != getPrice()) {
                     Util.message(p, "The price has changed to " + DynamicShops.economy.getDefaultCurrency().getSymbol() + getPrice());
                 }
+                DynamicShops.data.save(false);
                 return true;
             } else {
                 DynamicShops.logger.debug(p.getName() + " attempted to buy from the shop " + getName() + " but failed due to a buy operation error");
@@ -145,6 +146,7 @@ public abstract class Shop {
                 if (oldPrice != getPrice()) {
                     Util.message(p, "The price has changed to " + DynamicShops.economy.getDefaultCurrency().getSymbol() + getPrice());
                 }
+                DynamicShops.data.save(false);
                 return true;
             } else {
                 DynamicShops.logger.debug(p.getName() + " attempted to sell to the shop " + getName() + " but failed due to a sell operation error");

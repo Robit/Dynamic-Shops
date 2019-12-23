@@ -54,6 +54,7 @@ public class DynamicShops {
         Optional<ProviderRegistration<EconomyService>> economyMaybe = Sponge.getServiceManager().getRegistration(EconomyService.class);
         if (!economyMaybe.isPresent()) {
             logger.error("Dynamic Shops REQUIRES an Economy plugin in order to function. Its functionality has been disabled.");
+            Sponge.getGame().getEventManager().unregisterPluginListeners(this);
             return;
         }
         economy = economyMaybe.get().getProvider();
