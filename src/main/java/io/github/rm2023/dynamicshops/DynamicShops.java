@@ -27,6 +27,7 @@ import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.service.ProviderRegistration;
 import org.spongepowered.api.service.economy.EconomyService;
 
 import com.google.inject.Inject;
@@ -50,11 +51,12 @@ public class DynamicShops {
 
     @Listener
     public void onStart(GameStartedServerEvent event) {
-        Optional<EconomyService> economyMaybe = Sponge.getServiceManager().getRegistration(EconomyService.class);
+        Optional<ProviderRegistration<EconomyService>> economyMaybe = Sponge.getServiceManager().getRegistration(EconomyService.class);
         if (!economyMaybe.isPresent()) {
             logger.error("Dynamic Shops REQUIRES an Economy plugin in order to function. Its functionality has been disabled.");
             return;
         }
+        economy = economyMaybe.get().getProvider();
         data = new ShopData();
 
         // Sponge.getCommandManager().register();

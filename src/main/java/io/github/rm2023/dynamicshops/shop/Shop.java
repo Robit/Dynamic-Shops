@@ -69,6 +69,26 @@ public abstract class Shop {
         return new String(name);
     }
 
+    public double getMin() {
+        return min;
+    }
+
+    public double getMax() {
+        return max;
+    }
+
+    public double getK() {
+        return k;
+    }
+
+    public boolean getCanBuy() {
+        return canBuy;
+    }
+
+    public boolean getCanSell() {
+        return canSell;
+    }
+
     public void setLocation(Location<World> location) {
         this.location = location;
     }
