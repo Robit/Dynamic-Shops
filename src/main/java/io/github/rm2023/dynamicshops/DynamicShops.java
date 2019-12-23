@@ -22,6 +22,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -69,5 +70,10 @@ public class DynamicShops {
     @Listener
     public void onStop(GameStoppingServerEvent event) {
         data.save(true);
+    }
+
+    @Listener
+    public void onReload(GameReloadEvent event) {
+        data = new ShopData();
     }
 }

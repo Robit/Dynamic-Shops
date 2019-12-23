@@ -25,6 +25,7 @@ import org.spongepowered.api.service.economy.account.Account;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import io.github.rm2023.dynamicshops.DynamicShops;
 import io.github.rm2023.dynamicshops.util.Util;
 
 public class CommandShop extends Shop {
@@ -42,17 +43,17 @@ public class CommandShop extends Shop {
 
     @Override
     protected boolean buyOperation(Player p) {
-        Account playerAccount = economy.getOrCreateAccount(p.getUniqueId()).orElse(null);
+        Account playerAccount = DynamicShops.economy.getOrCreateAccount(p.getUniqueId()).orElse(null);
         BigDecimal price = BigDecimal.valueOf(getPrice());
-        if (playerAccount == null || playerAccount.getBalance(economy.getDefaultCurrency()).compareTo(price) > 0) {
+        if (playerAccount == null || playerAccount.getBalance(DynamicShops.economy.getDefaultCurrency()).compareTo(price) > 0) {
             Util.message(p, "You don't have enough money to purchase this!");
             return false;
         }
-        if (!Util.withdraw(playerAccount, economy, price, getName())) {
+        if (!Util.withdraw(playerAccount, DynamicShops.economy, price, getName())) {
             Util.message(p, "Error while withdrawing funds. Please contact an admin.");
             return false;
         }
-        logger.debug(Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command.replaceAll("@p", p.getName())).toString());
+        DynamicShops.logger.debug(Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command.replaceAll("@p", p.getName())).toString());
         offset += 1;
         return true;
     }
