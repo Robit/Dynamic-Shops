@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.economy.EconomyService;
@@ -63,5 +64,10 @@ public class DynamicShops {
         Sponge.getEventManager().registerListeners(this, new ShopChange());
         Sponge.getEventManager().registerListeners(this, new ShopCreate());
         Sponge.getEventManager().registerListeners(this, new ShopSell());
+    }
+
+    @Listener
+    public void onStop(GameStoppingServerEvent event) {
+        data.save(true);
     }
 }
