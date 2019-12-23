@@ -20,19 +20,20 @@ package io.github.rm2023.shop;
 import java.math.BigDecimal;
 
 import org.slf4j.Logger;
+import org.spongepowered.api.block.tileentity.TileEntity;
+import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.service.economy.EconomyService;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import com.google.inject.Inject;
-
 public abstract class Shop {
-    static protected int ROUNDING = 2;
-    @Inject
-    protected Logger logger;
+    static public EconomyService economy = null;
+    static public Logger logger = null;
     
     protected String name;
-    protected World world;
     protected Location<World> location;
     protected double offset;
     protected double min;
@@ -56,9 +57,9 @@ public abstract class Shop {
 	return BigDecimal.valueOf(min + ((min + max) / (1 + Math.pow(Math.E, -1 * k * (offset / (0.5 + max + min))))));
     }
     
-    public double getPriceAsDouble()
+    public double getRoundedPrice()
     {
-	return min + ((min + max) / (1 + Math.pow(Math.E, -1 * k * (offset / (0.5 + max + min)))));
+	return ((double) (Math.round((min + ((min + max) / (1 + Math.pow(Math.E, -1 * k * (offset / (0.5 + max + min)))))) * Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits())))) / Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits());
     }
     
     public boolean setPrice(double price)
@@ -68,8 +69,8 @@ public abstract class Shop {
 	    return false;
 	}
 	//If the price is with rounding range of min or max, set the price to be rounding range away from the boundary
-	price = Math.max(price, (1 + Math.pow(10, ROUNDING)) * min);
-	price = Math.min(price, (1 - Math.pow(10, ROUNDING)) * max);
+	price = Math.max(price, (1 + Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits())) * min);
+	price = Math.min(price, (1 - Math.pow(10, economy.getDefaultCurrency().getDefaultFractionDigits())) * max);
 	//Maaaaaaath
 	price = (price + min) / (max - min);
 	offset = Math.log(price / (1 - price)) / k;
@@ -83,11 +84,13 @@ public abstract class Shop {
 	   if(buyOperation(p))
 	   {
 	       logger.info(p.getName() + " bought from the shop the shop " + getName());
+	       updateSign();
 	       return true;
 	   }
 	   else
 	   {
 	       logger.debug(p.getName() + " attempted to buy from the shop " + getName() + " but failed due to a buy operation error");
+	       updateSign();
 	       return false;
 	   }
 	}
@@ -108,6 +111,7 @@ public abstract class Shop {
 	   else
 	   {
 	       logger.debug(p.getName() + " attempted to sell to the shop " + getName() + " but failed due to a sell operation error");
+	       updateSign();
 	       return false;
 	   }
 	}
@@ -115,9 +119,57 @@ public abstract class Shop {
 	return false;
     }
     
+    public void setSign()
+    {
+	TileEntity signTile = location.getTileEntity().orElse(null);
+	if(signTile == null || !signTile.get(SignData.class).isPresent())
+	{
+	    logger.error("Could not set the sign of shop " + getName() + ". It seems like it isn't a sign entity!");
+	    return;
+	}
+	SignData data = signTile.get(SignData.class).get();
+	data.setElement(0, Text.builder("[" + getName() + "]").color(TextColors.BLUE).build());
+	if(canBuy)
+	{
+	    if(canSell)
+	    {
+		data.setElement(1, Text.of("Buy/Sell"));
+	    }
+	    else
+	    {
+		data.setElement(1, Text.of("Buy"));
+	    }
+	} else {
+	    if(canSell)
+	    {
+		data.setElement(1, Text.of("Sell"));
+	    }
+	    else
+	    {
+		data.setElement(1, Text.of("???"));
+	    }
+	}
+	data.setElement(2, Text.of(economy.getDefaultCurrency().getSymbol().toString() + getRoundedPrice()));
+	if(!signTile.offer(data).isSuccessful())
+	{
+	    logger.error("Could not set the sign of shop " + getName() + ". Data transaction failed");
+	}
+    }
+    
     public void updateSign()
     {
-	
+	TileEntity signTile = location.getTileEntity().orElse(null);
+	if(signTile == null || !signTile.get(SignData.class).isPresent())
+	{
+	    logger.error("Could not set the sign of shop " + getName() + ". It seems like it isn't a sign entity!");
+	    return;
+	}
+	SignData data = signTile.get(SignData.class).get();
+	data.setElement(2, Text.of(economy.getDefaultCurrency().getSymbol().toString() + getRoundedPrice()));
+	if(!signTile.offer(data).isSuccessful())
+	{
+	    logger.error("Could not set the sign of shop " + getName() + ". Data transaction failed");
+	}
     }
     
     protected abstract boolean buyOperation(Player p);
