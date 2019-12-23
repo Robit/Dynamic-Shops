@@ -28,6 +28,7 @@ public class ShopData {
     LinkedList<Shop> shopList;
 
     public ShopData() {
+	shopList = new LinkedList<Shop>();
 	// TODO - Add stuff to load shops from a database
     }
 

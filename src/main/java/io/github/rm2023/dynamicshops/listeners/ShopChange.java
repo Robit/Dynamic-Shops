@@ -7,6 +7,6 @@ import org.spongepowered.api.event.block.tileentity.ChangeSignEvent;
 public class ShopChange {
     @Listener(order = Order.FIRST)
     public void ShopChangeEvent(ChangeSignEvent event) {
-
+	d
     }
 }

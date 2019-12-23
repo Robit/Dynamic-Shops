@@ -7,9 +7,9 @@ import io.github.rm2023.dynamicshops.shop.Shop;
 public class AdjustPriceData {
     public Player player;
     public double price;
-    public AdjustPriceData(Player p, double price)
-    {
-	player = p;
-	this.price = price;
+
+    public AdjustPriceData(Player p, double price) {
+        player = p;
+        this.price = price;
     }
 }
