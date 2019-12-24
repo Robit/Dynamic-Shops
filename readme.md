@@ -48,3 +48,6 @@ The plugin stores its information (a list of shops and their properties) to the 
 - A sister plugin that integrates dynamic economy as a command that allows for item buying and selling per player rather than the entire server.
 
 - your suggestion here. Let me know of ideas you may have on the issue tracker or though DM!
+
+
+##### This plugin was commissioned by The Bobs Gaming Network
