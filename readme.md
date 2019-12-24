@@ -1,9 +1,7 @@
 # Dynamic Shops
 ##### Modded Minecraft Economies are pretty hard to manage, especially as players reach the endgame and begin to churn out massive amounts of items to sell, rapidly inflating the value of money. Dynamic Shops is an attempt to help manage inflation as well as provide opportunities for unique ideas on your server. Uses an intuitive system for setting up shops. The graph that most of the shops use to determine price based on items bought/sold can be found at [https://tinyurl.com/dynamicshop1]. You can play with it to find the correct values for your own shop.
 
-Tested with the current reccomended 1.12.2 versions of spongeforge, totaleconomy, and forge as of the 11-18-19 (spongeforge-1.12.2-2838-7.1.7.jar, TotalEconomy-1.8.1.jar, and forge-1.12.2-14.23.5.2847-universal.jar)
-
-This plugin was tested on 
+Tested with the current reccomended 1.12.2 versions of spongeforge, totaleconomy, and forge as of the 11-18-19 (spongeforge-1.12.2-2838-7.1.7.jar, TotalEconomy-1.8.1.jar, and forge-1.12.2-14.23.5.2847-universal.jar) 
 
 ### PERMISSIONS:
 | Permission                                             | Description                                                                                                                                                                                        |
