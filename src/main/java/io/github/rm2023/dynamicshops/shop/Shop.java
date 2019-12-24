@@ -203,6 +203,9 @@ public abstract class Shop {
     }
 
     public void setSign() {
+        if (location == null) {
+            return;
+        }
         TileEntity signTile = location.getTileEntity().orElse(null);
         if (signTile == null || !signTile.get(SignData.class).isPresent()) {
             DynamicShops.logger.error("Could not set the sign of shop " + getName() + ". It seems like it isn't a sign entity!");
@@ -230,6 +233,9 @@ public abstract class Shop {
     }
 
     public void updateSign() {
+        if (location == null) {
+            return;
+        }
         TileEntity signTile = location.getTileEntity().orElse(null);
         if (signTile == null || !signTile.get(SignData.class).isPresent()) {
             DynamicShops.logger.error("Could not set the sign of shop " + getName() + ". It seems like it isn't a sign entity!");
