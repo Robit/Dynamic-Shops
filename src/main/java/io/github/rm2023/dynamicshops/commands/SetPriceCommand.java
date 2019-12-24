@@ -39,29 +39,29 @@ public class SetPriceCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            Util.message(src, "This command must be executed by a player.");
+            Util.message(src, "This command must be executed by a player.", true);
             return CommandResult.empty();
         }
         double price = args.<Double>getOne("price").get();
         if (price < 0) {
-            Util.message(src, "The price must be greater than 0!");
+            Util.message(src, "The price must be greater than 0!", true);
             return CommandResult.empty();
         }
         Player p = (Player) src;
         for (CreateShopData data : ShopCreate.createList) {
             if (p.equals(data.player)) {
-                Util.message(src, "You’re already in the process of creating a shop! Finish that first!");
+                Util.message(src, "You’re already in the process of creating a shop! Finish that first!", true);
                 return CommandResult.empty();
             }
         }
         for (AdjustPriceData data : ShopAdjust.adjustList) {
             if (p.equals(data.player)) {
-                Util.message(src, "You’re already in the process of adjusting a shop! Finish that first!");
+                Util.message(src, "You’re already in the process of adjusting a shop! Finish that first!", true);
                 return CommandResult.empty();
             }
         }
         String prefix = DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain();
-        Util.message(src, "You are now adjusting a shop's price to " + prefix + price + ". Please right click the shop you want to adjust, or right click any other block to cancel. This operation will automatically cancel in 30 seconds.");
+        Util.message(src, "You are now adjusting a shop's price to " + prefix + price + ". Please right click the shop you want to adjust, or right click any other block to cancel. This operation will automatically cancel in 30 seconds.", false);
         AdjustPriceData data = new AdjustPriceData(p, price);
         ShopAdjust.adjustList.add(data);
         Task task = Task.builder().execute(new ShopAdjust.RemoveDataTask(data)).delay(30, TimeUnit.SECONDS).name("ShopAdjust Cancel Task").submit(DynamicShops.container);

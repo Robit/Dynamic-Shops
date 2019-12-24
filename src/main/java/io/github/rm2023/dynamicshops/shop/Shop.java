@@ -147,9 +147,9 @@ public abstract class Shop {
             if (buyOperation(p)) {
                 DynamicShops.logger.info(p.getName() + " bought from the shop " + getName());
                 updateSign();
-                Util.message(p, "Purchase Successful.");
+                Util.message(p, "Purchase Successful.", false);
                 if (oldPrice != getPrice()) {
-                    Util.message(p, "The price has changed to " + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getPrice());
+                    Util.message(p, "The price has changed to " + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getPrice(), false);
                 }
                 recentlyUsed.add(p);
                 return true;
@@ -174,9 +174,9 @@ public abstract class Shop {
             if (sellOperation(p)) {
                 DynamicShops.logger.info(p.getName() + " sold to the shop " + getName());
                 updateSign();
-                Util.message(p, "Sell Successful.");
+                Util.message(p, "Sell Successful.", false);
                 if (oldPrice != getPrice()) {
-                    Util.message(p, "The price has changed to " + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getPrice());
+                    Util.message(p, "The price has changed to " + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getPrice(), false);
                 }
                 recentlyUsed.add(p);
                 return true;

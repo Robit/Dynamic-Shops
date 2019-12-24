@@ -44,49 +44,48 @@ public class CreateStaticShopCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (!(src instanceof Player)) {
-            Util.message(src, "This command must be executed by a player.");
+            Util.message(src, "This command must be executed by a player.", true);
             return CommandResult.empty();
         }
         String name = args.<String>getOne("shopName").get();
         double price = args.<Double>getOne("price").get();
         if (price < 0) {
-            Util.message(src, "The price must be greater than 0!");
+            Util.message(src, "The price must be greater than 0!", true);
             return CommandResult.empty();
         }
         String extraArgument = args.<String>getOne("buyOnly/sellOnly").orElse("");
         if (!(extraArgument.equals("") || extraArgument.equals("buyOnly") || extraArgument.equals("sellOnly"))) {
-            Util.message(src, "The optional argument must either be buyOnly or sellOnly!");
+            Util.message(src, "The optional argument must either be buyOnly or sellOnly!", true);
             return CommandResult.empty();
         }
         Player p = (Player) src;
         for (CreateShopData data : ShopCreate.createList) {
             if (p.equals(data.player)) {
-                Util.message(src, "You’re already in the process of creating a shop! Finish that first!");
+                Util.message(src, "You’re already in the process of creating a shop! Finish that first!", true);
                 return CommandResult.empty();
             }
         }
         for (AdjustPriceData data : ShopAdjust.adjustList) {
             if (p.equals(data.player)) {
-                Util.message(src, "You’re already in the process of adjusting a shop! Finish that first!");
+                Util.message(src, "You’re already in the process of adjusting a shop! Finish that first!", true);
                 return CommandResult.empty();
             }
         }
         ItemStack hand = p.getItemInHand(HandTypes.MAIN_HAND).orElse(null);
         if (hand == null || hand.getType().equals(ItemTypes.AIR)) {
-            Util.message(src, "You must specify the item you want the shop to use by holding it in your hand.");
-            Util.message(src, "Holding multiple items will make the shop deal in multiples of that item.");
+            Util.message(src, "You must specify the item you want the shop to use by holding it in your hand. Holding multiple items will make the shop deal in multiples of that item.", true);
             return CommandResult.empty();
         }
         String prefix = DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain();
         Shop shop = new ItemShop(name, null, price, price, 0, !extraArgument.equals("sellOnly"), !extraArgument.equals("buyOnly"), hand.copy());
-        Util.message(p, "You are creating a shop named " + name + " which will buy/sell the item stack (" + hand.getQuantity() + " " + hand.getType().getName() + ") in your hand for " + prefix + price + ".");
+        Util.message(p, "You are creating a shop named " + name + " which will buy/sell the item stack (" + hand.getQuantity() + " " + hand.getType().getName() + ") in your hand for " + prefix + price + ".", false);
         if (!shop.getCanBuy()) {
-            Util.message(src, "However, this shop will only sell items.");
+            Util.message(src, "However, this shop will only sell items.", false);
         }
         if (!shop.getCanSell()) {
-            Util.message(src, "However, this shop will only buy items.");
+            Util.message(src, "However, this shop will only buy items.", false);
         }
-        Util.message(src, "Right click the sign that you want to set as a shop. To cancel, right click any other block. The operation will automatically cancel in 30 seconds.");
+        Util.message(src, "Right click the sign that you want to set as a shop. To cancel, right click any other block. The operation will automatically cancel in 30 seconds.", false);
         CreateShopData data = new CreateShopData(p, shop);
         ShopCreate.createList.add(data);
         Task task = Task.builder().execute(new ShopCreate.RemoveDataTask(data)).delay(30, TimeUnit.SECONDS).name("ShopCreation Cancel Task").submit(DynamicShops.container);

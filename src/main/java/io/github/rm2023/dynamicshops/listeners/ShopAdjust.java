@@ -50,16 +50,16 @@ public class ShopAdjust {
                         data.price = shop.getInitial();
                     }
                     if (shop.setPrice(data.price)) {
-                        Util.message(player, "Price changed successfully.");
+                        Util.message(player, "Price changed successfully.", true);
                         DynamicShops.logger.info("Shop " + shop.getName() + "'s price was changed to " + data.price + " by " + player.getName());
                         shop.updateSign();
                         return;
                     } else {
-                        Util.message(player, "Error setting price. Price must be between the minimum and maximum prices of the shop. Operation cancelled.");
+                        Util.message(player, "Error setting price. Price must be between the minimum and maximum prices of the shop. Operation cancelled.", false);
                         return;
                     }
                 } else {
-                    Util.message(player, "Invalid Block! Operation cancelled.");
+                    Util.message(player, "Invalid Block! Operation cancelled.", false);
                     return;
                 }
             }

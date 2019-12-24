@@ -46,18 +46,18 @@ public class ShopCreate {
                 Location<World> l = event.getTargetBlock().getLocation().get();
                 BlockState b = l.getBlock();
                 if (b.getType() != BlockTypes.STANDING_SIGN && b.getType() != BlockTypes.WALL_SIGN) {
-                    Util.message(player, "Invalid block type! Operation cancelled.");
+                    Util.message(player, "Invalid block type! Operation cancelled.", true);
                     return;
                 }
                 if (DynamicShops.data.getShop(l) != null) {
-                    Util.message(player, "Location is already a shop! Operation cancelled.");
+                    Util.message(player, "Location is already a shop! Operation cancelled.", true);
                     return;
                 }
                 data.shop.setLocation(l);
                 DynamicShops.data.addShop(data.shop);
                 data.shop.setSign();
                 DynamicShops.logger.info("Shop " + data.shop.getName() + " added by " + player.getName());
-                Util.message(player, "Shop added successfully! To delete it, break the sign.");
+                Util.message(player, "Shop added successfully! To delete it, break the sign.", false);
                 event.setCancelled(true);
                 return;
             }
