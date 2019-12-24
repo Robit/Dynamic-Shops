@@ -77,7 +77,7 @@ public class CreateStaticShopCommand implements CommandExecutor {
             return CommandResult.empty();
         }
         String prefix = DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain();
-        Shop shop = new ItemShop(name, null, price, price, 0, !extraArgument.equals("sellOnly"), !extraArgument.equals("buyOnly"), hand.copy());
+        Shop shop = new ItemShop(name, null, price, price, 0, !extraArgument.equals("sellOnly"), !extraArgument.equals("buyOnly"), hand);
         Util.message(p, "You are creating a shop named " + name + " which will buy/sell the item stack (" + hand.getQuantity() + " " + hand.getType().getName() + ") in your hand for " + prefix + price + ".", false);
         if (!shop.getCanBuy()) {
             Util.message(src, "However, this shop will only sell items.", false);

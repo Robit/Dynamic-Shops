@@ -93,6 +93,10 @@ public abstract class Shop {
         return k;
     }
 
+    public double getOffset() {
+        return offset;
+    }
+
     public boolean getCanBuy() {
         return canBuy;
     }

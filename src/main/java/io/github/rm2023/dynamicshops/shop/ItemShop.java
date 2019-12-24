@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.service.economy.account.Account;
 import org.spongepowered.api.world.Location;
@@ -41,7 +42,12 @@ public class ItemShop extends Shop {
 
     public ItemShop(String name, Location<World> location, double min, double max, double k, boolean canBuy, boolean canSell, ItemStack items) {
         super(name, location, min, max, k, canBuy, canSell);
-        this.items = items;
+        this.items = items.copy();
+    }
+
+    public ItemShop(String name, Location<World> location, double min, double max, double k, boolean canBuy, boolean canSell, ItemStackSnapshot items) {
+        super(name, location, min, max, k, canBuy, canSell);
+        this.items = items.createStack();
     }
 
     @Override
@@ -94,5 +100,9 @@ public class ItemShop extends Shop {
         }
         offset -= 1;
         return true;
+    }
+
+    public ItemStackSnapshot getItems() {
+        return items.createSnapshot();
     }
 }

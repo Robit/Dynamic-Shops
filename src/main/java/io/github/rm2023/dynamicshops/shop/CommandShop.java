@@ -63,4 +63,7 @@ public class CommandShop extends Shop {
         return false;
     }
 
+    public String getCommand() {
+        return new String(command);
+    }
 }
