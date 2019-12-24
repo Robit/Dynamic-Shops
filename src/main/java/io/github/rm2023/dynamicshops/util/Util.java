@@ -32,8 +32,13 @@ import org.spongepowered.api.text.format.TextColors;
 import io.github.rm2023.dynamicshops.DynamicShops;
 
 public class Util {
-    public static void message(MessageReceiver p, String m) {
-        p.sendMessage(Text.builder("[DynamicShops] " + m).color(TextColors.BLUE).build());
+
+    public static void message(MessageReceiver p, String m, boolean error) {
+        if (error) {
+            p.sendMessage(Text.builder("[DynamicShops] ").color(TextColors.BLUE).append(Text.builder(m).color(TextColors.RED).build()).build());
+        } else {
+            p.sendMessage(Text.builder("[DynamicShops] " + m).color(TextColors.BLUE).build());
+        }
     }
 
     public static boolean withdraw(Account playerAccount, EconomyService economy, BigDecimal price, String reason) {
