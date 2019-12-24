@@ -31,6 +31,7 @@ public class ShopChange {
         if (shop != null) {
             if (!event.getCause().getContext().equals(DynamicShops.container)) {
                 DynamicShops.logger.debug("Cancelled ChangeSignEvent at location of shop " + shop.getName());
+                shop.setSign();
                 event.setCancelled(true);
             }
         }

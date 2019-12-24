@@ -44,6 +44,7 @@ public class ShopBreak {
                         DynamicShops.logger.info("Removed shop " + shop.getName() + " due to a block break event caused by " + p.get().getName());
                     } else {
                         DynamicShops.logger.debug("Prevented ChangeBlockEvent at location of " + shop.getName());
+                        shop.setSign();
                         event.setCancelled(true);
                     }
                 }

@@ -37,7 +37,8 @@ import io.github.rm2023.dynamicshops.util.Util;
 
 public class ShopCreate {
     public static ArrayList<CreateShopData> createList = new ArrayList<CreateShopData>();
-    @Listener(order = Order.LATE)
+
+    @Listener(order = Order.EARLY)
     public void ShopCreateEvent(InteractBlockEvent.Secondary.MainHand event, @First Player player) {
         for (CreateShopData data : createList) {
             if (data.player.equals(player)) {
@@ -57,6 +58,7 @@ public class ShopCreate {
                 data.shop.setSign();
                 DynamicShops.logger.info("Shop " + data.shop.getName() + " added by " + player.getName());
                 Util.message(player, "Shop added successfully! To delete it, break the sign.");
+                event.setCancelled(true);
                 return;
             }
         }

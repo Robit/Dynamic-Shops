@@ -36,7 +36,8 @@ import io.github.rm2023.dynamicshops.util.Util;
 
 public class ShopAdjust {
     public static ArrayList<AdjustPriceData> adjustList = new ArrayList<AdjustPriceData>();
-    @Listener(order = Order.LATE)
+
+    @Listener(order = Order.EARLY)
     public void ShopAdjustEvent(InteractBlockEvent.Secondary.MainHand event, @First Player player) {
         for (AdjustPriceData data : adjustList) {
             if (data.player.equals(player)) {
@@ -44,6 +45,7 @@ public class ShopAdjust {
                 Location<World> l = event.getTargetBlock().getLocation().get();
                 Shop shop = DynamicShops.data.getShop(l);
                 if (shop != null) {
+                    event.setCancelled(true);
                     if (data.price < 0) {
                         data.price = shop.getInitial();
                     }

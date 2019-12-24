@@ -36,7 +36,9 @@ import org.spongepowered.api.text.Text;
 
 import com.google.inject.Inject;
 
+import io.github.rm2023.dynamicshops.commands.CreateCommandShopCommand;
 import io.github.rm2023.dynamicshops.commands.CreateShopCommand;
+import io.github.rm2023.dynamicshops.commands.CreateStaticShopCommand;
 import io.github.rm2023.dynamicshops.commands.MainCommand;
 import io.github.rm2023.dynamicshops.commands.ResetPriceCommand;
 import io.github.rm2023.dynamicshops.commands.SetPriceCommand;
@@ -77,8 +79,8 @@ public class DynamicShops {
         suggestions.add("sellOnly");
 
         CommandSpec createShop = CommandSpec.builder().description(Text.of("Creates a dynamic shop whose price changes based on how many items have been bought/sold from it.")).permission("dynamicshops.admin").arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("shopName"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("minPrice"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("maxPrice"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("priceChangeRate"))), GenericArguments.optional(GenericArguments.withSuggestions(GenericArguments.string(Text.of("buyOnly/sellOnly/initialPrice")), suggestions))).executor(new CreateShopCommand()).build();
-        CommandSpec createStaticShop = CommandSpec.builder().description(Text.of("Creates a static shop whose price doesn't change.")).permission("dynamicshops.admin").arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("shopName"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("price"))), GenericArguments.optional(GenericArguments.withSuggestions(GenericArguments.string(Text.of("buyOnly/sellOnly")), suggestions))).executor(new CreateShopCommand()).build();
-        CommandSpec createCommandShop = CommandSpec.builder().description(Text.of("Creates a buy only shop that executes a command when its run. Use @p in the command whereever you want to specify a player.")).permission("dynamicshops.admin").arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("shopName"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("initialPrice"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("maxPrice"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("priceChangeRate"))), GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of("command")))).executor(new CreateShopCommand()).build();
+        CommandSpec createStaticShop = CommandSpec.builder().description(Text.of("Creates a static shop whose price doesn't change.")).permission("dynamicshops.admin").arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("shopName"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("price"))), GenericArguments.optional(GenericArguments.withSuggestions(GenericArguments.string(Text.of("buyOnly/sellOnly")), suggestions))).executor(new CreateStaticShopCommand()).build();
+        CommandSpec createCommandShop = CommandSpec.builder().description(Text.of("Creates a buy only shop that executes a command when its run. Use @p in the command whereever you want to specify a player.")).permission("dynamicshops.admin").arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("shopName"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("initialPrice"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("maxPrice"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("priceChangeRate"))), GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of("command")))).executor(new CreateCommandShopCommand()).build();
         CommandSpec setPrice = CommandSpec.builder().description(Text.of("Sets the price of a shop.")).permission("dynamicshops.admin").arguments(GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("price")))).executor(new SetPriceCommand()).build();
         CommandSpec resetPrice = CommandSpec.builder().description(Text.of("Resets the price of a shop")).permission("dynamicshops.admin").executor(new ResetPriceCommand()).build();
 
