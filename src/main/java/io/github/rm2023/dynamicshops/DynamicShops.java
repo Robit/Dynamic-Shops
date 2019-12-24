@@ -30,6 +30,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -54,6 +55,7 @@ import io.github.rm2023.dynamicshops.listeners.ShopChange;
 import io.github.rm2023.dynamicshops.listeners.ShopCreate;
 import io.github.rm2023.dynamicshops.listeners.ShopSell;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 @Plugin(id = "dynamicshops", name = "Dynamic Shops", version = "0.0.0", description = "Provides admin shops which follow a logistic function for price setting.")
@@ -70,8 +72,37 @@ public class DynamicShops {
     public static ShopData data;
     public static EconomyService economy;
     public static Text helpMessage;
+    public static Path dbFile;
     public static ConfigurationLoader<CommentedConfigurationNode> dbLoader;
     public static CommentedConfigurationNode dbNode;
+
+    @Listener
+    public void onInit(GameInitializationEvent event) {
+        dbFile = configDir.resolve("shops_db");
+        dbLoader = HoconConfigurationLoader.builder().setPath(dbFile).build();
+        if (!Files.exists(dbFile)) {
+            try {
+                Files.createDirectories(configDir);
+                Files.createFile(dbFile);
+                dbNode = dbLoader.load();
+                dbLoader.save(dbNode);
+            } catch (IOException e) {
+                logger_.error("Error on creating new database file! Plugin functionality disabled.");
+                e.printStackTrace();
+                Sponge.getGame().getEventManager().unregisterPluginListeners(this);
+                return;
+            }
+        } else {
+            try {
+                dbNode = dbLoader.load();
+            } catch (IOException e) {
+                logger_.error("Error on loading database file! Plugin functionality disabled.");
+                e.printStackTrace();
+                Sponge.getGame().getEventManager().unregisterPluginListeners(this);
+                return;
+            }
+        }
+    }
 
     @Listener
     public void onStart(GameStartedServerEvent event) {
@@ -84,27 +115,6 @@ public class DynamicShops {
             return;
         }
         economy = economyMaybe.get().getProvider();
-
-        if (!Files.exists(configDir.resolve("database"))) {
-            try {
-                Files.createFile(configDir.resolve("database"));
-                dbNode = dbLoader.load();
-            } catch (IOException e) {
-                logger.error("Error on creating new database file! Plugin functionality disabled.");
-                e.printStackTrace();
-                Sponge.getGame().getEventManager().unregisterPluginListeners(this);
-                return;
-            }
-        } else {
-            try {
-                dbNode = dbLoader.load();
-            } catch (IOException e) {
-                logger.error("Error on loading database file!! Plugin functionality disabled.");
-                e.printStackTrace();
-                Sponge.getGame().getEventManager().unregisterPluginListeners(this);
-                return;
-            }
-        }
         data = new ShopData();
 
         ArrayList<String> suggestions = new ArrayList<String>();

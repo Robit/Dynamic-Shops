@@ -17,6 +17,7 @@
 
 package io.github.rm2023.dynamicshops.data;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 import org.spongepowered.api.Sponge;
@@ -47,17 +48,21 @@ public class ShopData {
         dbLoader = DynamicShops.dbLoader;
         dbNode = DynamicShops.dbNode.copy();
 
-        for (CommentedConfigurationNode node : dbNode.getChildrenList()) {
+        for (CommentedConfigurationNode node : dbNode.getChildrenMap().values()) {
             if (node.getNode("type").getString().equals("ItemShop")) {
                 try {
-                    shopList.add(new ItemShop(node.getNode("name").getString(), node.getNode("location").getValue(locationToken), node.getNode("min").getDouble(), node.getNode("max").getDouble(), node.getNode("k").getDouble(), node.getNode("canBuy").getBoolean(), node.getNode("canSell").getBoolean(), node.getNode("items").getValue(TypeTokens.ITEM_SNAPSHOT_TOKEN)));
+                    ItemShop shop = new ItemShop(node.getNode("name").getString(), node.getNode("location").getValue(locationToken), node.getNode("min").getDouble(), node.getNode("max").getDouble(), node.getNode("k").getDouble(), node.getNode("canBuy").getBoolean(), node.getNode("canSell").getBoolean(), node.getNode("items").getValue(TypeTokens.ITEM_SNAPSHOT_TOKEN).createStack());
+                    shop.setOffset(node.getNode("offset").getDouble());
+                    shopList.add(shop);
                 } catch (ObjectMappingException e) {
                     e.printStackTrace();
                 }
             }
-            if (node.getString("type").equals("CommandShop")) {
+            if (node.getNode("type").getString().equals("CommandShop")) {
                 try {
-                    shopList.add(new CommandShop(node.getNode("name").getString(), node.getNode("location").getValue(locationToken), node.getNode("min").getDouble(), node.getNode("max").getDouble(), node.getNode("k").getDouble(), node.getNode("command").getString()));
+                    CommandShop shop = new CommandShop(node.getNode("name").getString(), node.getNode("location").getValue(locationToken), node.getNode("min").getDouble(), node.getNode("max").getDouble(), node.getNode("k").getDouble(), node.getNode("command").getString());
+                    shop.setOffset(node.getNode("offset").getDouble());
+                    shopList.add(shop);
                 } catch (ObjectMappingException e) {
                     e.printStackTrace();
                 }
@@ -103,32 +108,46 @@ public class ShopData {
 
     public void save(boolean force) {
         if (force || Sponge.getServer().getRunningTimeTicks() - lastSaveAge > 600) {
-            lastSaveAge = Sponge.getServer().getRunningTimeTicks();
-            for (CommentedConfigurationNode child : dbNode.getChildrenList()) {
-                dbNode.removeChild(child.getKey());
-            }
+            dbNode = dbLoader.createEmptyNode();
             int i = 0;
             for (Shop shop : shopList) {
-                CommentedConfigurationNode node = dbNode.getNode(i);
+                i++;
+                CommentedConfigurationNode node = dbNode.getNode(Integer.toString(i));
                 if (shop instanceof ItemShop) {
-                    node.getNode("type").setValue("ItemShop");
-                    node.getNode("name").setValue(shop.getName());
-                    node.getNode("location").setValue(shop.getLocation());
-                    node.getNode("min").setValue(shop.getMin());
-                    node.getNode("max").setValue(shop.getMax());
-                    node.getNode("k").setValue(shop.getK());
-                    node.getNode("canBuy").setValue(shop.getCanBuy());
-                    node.getNode("canSell").setValue(shop.getCanSell());
-                    node.getNode("items").setValue(((ItemShop) shop).getItems());
+                    try {
+                        node.getNode("type").setValue("ItemShop");
+                        node.getNode("name").setValue(shop.getName());
+                        node.getNode("location").setValue(locationToken, shop.getLocation());
+                        node.getNode("min").setValue(shop.getMin());
+                        node.getNode("max").setValue(shop.getMax());
+                        node.getNode("k").setValue(shop.getK());
+                        node.getNode("canBuy").setValue(shop.getCanBuy());
+                        node.getNode("canSell").setValue(shop.getCanSell());
+                        node.getNode("offset").setValue(shop.getOffset());
+                        node.getNode("items").setValue(TypeTokens.ITEM_SNAPSHOT_TOKEN, ((ItemShop) shop).getItems().createSnapshot());
+                    } catch (ObjectMappingException e) {
+                        e.printStackTrace();
+                    }
                 }
                 if (shop instanceof CommandShop) {
-                    node.getNode("type").setValue("CommandShop");
-                    node.getNode("name").setValue(shop.getName());
-                    node.getNode("location").setValue(shop.getLocation());
-                    node.getNode("min").setValue(shop.getMin());
-                    node.getNode("max").setValue(shop.getMax());
-                    node.getNode("command").setValue(((CommandShop) shop).getCommand());
+                    try {
+                        node.getNode("type").setValue("CommandShop");
+                        node.getNode("name").setValue(shop.getName());
+                        node.getNode("location").setValue(locationToken, shop.getLocation());
+                        node.getNode("min").setValue(shop.getMin());
+                        node.getNode("max").setValue(shop.getMax());
+                        node.getNode("offset").setValue(shop.getOffset());
+                        node.getNode("command").setValue(((CommandShop) shop).getCommand());
+                    } catch (ObjectMappingException e) {
+                        e.printStackTrace();
+                    }
                 }
+            }
+            try {
+                dbLoader.save(dbNode);
+                lastSaveAge = Sponge.getServer().getRunningTimeTicks();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

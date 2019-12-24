@@ -97,6 +97,10 @@ public abstract class Shop {
         return offset;
     }
 
+    public void setOffset(double offset) {
+        this.offset = offset;
+    }
+
     public boolean getCanBuy() {
         return canBuy;
     }
