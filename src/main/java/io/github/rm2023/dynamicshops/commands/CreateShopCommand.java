@@ -103,7 +103,7 @@ public class CreateShopCommand implements CommandExecutor {
             return CommandResult.empty();
         }
         String prefix = DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain();
-        Shop shop = new ItemShop(name, null, min, max, k, !extraArgument.equals("sellOnly"), !extraArgument.equals("buyOnly"), hand);
+        Shop shop = new ItemShop(name, null, min, max, k, !extraArgument.equals("sellOnly"), !extraArgument.equals("buyOnly"), hand.copy());
         if (!Double.isNaN(initialPrice)) {
             shop.setPrice(initialPrice);
         }
