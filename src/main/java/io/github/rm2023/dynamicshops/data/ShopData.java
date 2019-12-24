@@ -107,7 +107,7 @@ public class ShopData {
     }
 
     public void save(boolean force) {
-        if (force || Sponge.getServer().getRunningTimeTicks() - lastSaveAge > 600) {
+        if (force || Sponge.getServer().getRunningTimeTicks() - lastSaveAge > 100) {
             dbNode = dbLoader.createEmptyNode();
             int i = 0;
             for (Shop shop : shopList) {

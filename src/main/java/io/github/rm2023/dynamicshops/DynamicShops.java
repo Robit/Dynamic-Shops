@@ -58,7 +58,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "dynamicshops", name = "Dynamic Shops", version = "0.0.0", description = "Provides admin shops which follow a logistic function for price setting.")
+@Plugin(id = "dynamicshops", name = "Dynamic Shops", version = "1.0.0", description = "Provides admin shops which follow a logistic function for price setting.")
 public class DynamicShops {
     @Inject
     private Logger logger_;
@@ -128,10 +128,10 @@ public class DynamicShops {
         , Text.NEW_LINE, "   This command creates a dynamic shop that buys/sells the item stack in your hand. For example, if you do /ds createShop getyourglowstone 1 2 0.05, while holding 32 glowstone, it will buy and sell 32 glowstone for a minimum of 1 currency and maximum of 2 currency, starting at 1.5 currency. It also preserves item metadata. priceChangeRate does not directly change the price, but determines the slope of a logistic curve. Use the graph at https://tinyurl.com/dynamicshop1 to explore how modifying minPrice, maxPrice, and priceChangeRate will change the price. It is reccomended that priceChangeRate is below 0.05 for best results. By default, the initial price of a shop will the average of its minimum and maximum prices. However, if [optional] is a number, then that number will be the inital price. [optional] can also be buyOnly or sellOnly. If the shop is buyOnly, the initial price is set to 1 rounding unit (1 cent for dollar economies) above minPrice and players can only left click the shop to buy. Vice versa for sellOnly."
         , Text.NEW_LINE, "   ex) Running /dynamicshop createShop GlowstoneEmporium 1 10 0.05 while holding a glowstone in your hand will make a shop named GlowstoneEmporium that players can buy/sell a glowstone from/to for 6.5 currency initially, but the price will increase as players buy from it and decrease as players sell to it."
         , Text.NEW_LINE, "   ex) Running /dynamicshop createShop GiveMeGlowstoneee 1 10 0.05 sellOnly while holding a glowstone in your hand will make a shop named GiveMeGlowstoneee that players can sell a glowstone to for 10 currency initially, but the sell price will eventually decrease to 1 currency"
-        , Text.NEW_LINE, "/dynamicshop createStaticShop name price [optional]"
+                , Text.NEW_LINE, "/dynamicshop createStaticShop [name] [price] [optional]"
         , Text.NEW_LINE, "   This command works similarly to createShop. However, the price of the shop does not change. [optional] can only be used to reference buyOnly and sellOnly"
         , Text.NEW_LINE, "   ex) Running /dynamicshop createStaticShop unchangingGlowstone 6 while holding 8 glowstone in your hand will make a shop that always buys/sells 8 glowstone for 6."
-        , Text.NEW_LINE, "/dynamicshop createCommandShop name min max priceChangeRate command"
+                , Text.NEW_LINE, "/dynamicshop createCommandShop name initial max priceChangeRate command"
         , Text.NEW_LINE, "   This command creates a dynamic command shop. It is similar to createShop but it is buyOnly and runs the specified command from console whenever its bought from, rather than giving an item. Use @p wherever you want to specify the buyer's name"
         , Text.NEW_LINE, "   ex) /dynamicstop createCommandShop healmeplz 1 10 0.05 heal @p will create a shop named healmeplz that costs 1 currency initially but will eventually go up to 10 currency. When bought, it runs the command heal [buyer] from console."
         , Text.NEW_LINE, "/dynamicshop setPrice price"
