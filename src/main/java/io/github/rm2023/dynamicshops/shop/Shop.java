@@ -65,12 +65,12 @@ public abstract class Shop {
         this.canBuy = canBuy;
         this.canSell = canSell;
         if (!canBuy) {
-            setPrice(min);
-        }
-        if (!canSell) {
             setPrice(max);
         }
-        initial = offset;
+        if (!canSell) {
+            setPrice(min);
+        }
+        initial = getPrice();
     }
 
     public String getName() {
@@ -126,8 +126,8 @@ public abstract class Shop {
         }
         // If the price is with rounding range of min or max, set the price to be
         // rounding range away from the boundary
-        price = Math.max(price, (1 + Math.pow(10, DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits())) * min);
-        price = Math.min(price, (1 - Math.pow(10, DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits())) * max);
+        price = Math.max(price, (1 + Math.pow(10, -1 * DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits())) * min);
+        price = Math.min(price, (1 - Math.pow(10, -1 * DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits())) * max);
         // Maaaaaaath
         price = (price - min) / (max - min);
         offset = Math.log(price / (1 - price)) / k;

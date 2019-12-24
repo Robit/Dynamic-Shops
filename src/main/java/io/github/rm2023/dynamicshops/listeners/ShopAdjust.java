@@ -51,11 +51,14 @@ public class ShopAdjust {
                         Util.message(player, "Price changed successfully.");
                         DynamicShops.logger.info("Shop " + shop.getName() + "'s price was changed to " + data.price + " by " + player.getName());
                         shop.updateSign();
+                        return;
                     } else {
                         Util.message(player, "Error setting price. Price must be between the minimum and maximum prices of the shop. Operation cancelled.");
+                        return;
                     }
                 } else {
                     Util.message(player, "Invalid Block! Operation cancelled.");
+                    return;
                 }
             }
         }
