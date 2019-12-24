@@ -27,8 +27,7 @@ public class MainCommand implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        // TODO Auto-generated method stub
-        return null;
+        return CommandResult.empty();
     }
 
 }

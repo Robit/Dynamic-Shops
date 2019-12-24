@@ -17,9 +17,14 @@
 
 package io.github.rm2023.dynamicshops.shop;
 
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
@@ -31,12 +36,14 @@ import io.github.rm2023.dynamicshops.util.Util;
 public abstract class Shop {
     protected String name;
     protected Location<World> location;
+    protected double initial;
     protected double offset;
     protected double min;
     protected double max;
     protected double k;
     protected boolean canBuy;
     protected boolean canSell;
+    protected ArrayList<Player> recentlyUsed = new ArrayList<Player>();
 
     public Shop() {
         name = "UNDEFINED";
@@ -63,10 +70,15 @@ public abstract class Shop {
         if (!canSell) {
             setPrice(max);
         }
+        initial = offset;
     }
 
     public String getName() {
         return new String(name);
+    }
+
+    public double getInitial() {
+        return initial;
     }
 
     public double getMin() {
@@ -98,10 +110,17 @@ public abstract class Shop {
     }
 
     public double getPrice() {
-        return ((double) (Math.round((min + ((min + max) / (1 + Math.pow(Math.E, -1 * k * (offset / (0.5 + max + min)))))) * Math.pow(10, DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits())))) / Math.pow(10, DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits());
+        if (k == 0) {
+            return min;
+        }
+        return ((double) (Math.round((min + ((max - min) / (1 + Math.pow(Math.E, -1 * k * offset)))) * Math.pow(10, DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits())))) / Math.pow(10, DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits());
     }
 
     public boolean setPrice(double price) {
+        if (k == 0) {
+            min = price;
+            return true;
+        }
         if (price < min || price > max) {
             return false;
         }
@@ -110,22 +129,29 @@ public abstract class Shop {
         price = Math.max(price, (1 + Math.pow(10, DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits())) * min);
         price = Math.min(price, (1 - Math.pow(10, DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits())) * max);
         // Maaaaaaath
-        price = (price + min) / (max - min);
+        price = (price - min) / (max - min);
         offset = Math.log(price / (1 - price)) / k;
+        updateSign();
         return true;
     }
 
     public boolean buy(Player p) {
         if (canBuy && p.hasPermission("dynamicshops.buy." + getName())) {
+            if (recentlyUsed.contains(p)) {
+                DynamicShops.logger.trace("Antispam prevented " + p.getName() + " buying from shop " + getName());
+                return false;
+            }
+            Task task = Task.builder().execute(new RemoveFromRecentlyUsedTask(p)).delay(250, TimeUnit.MILLISECONDS).name("Shop " + getName() + " antispam task for player" + p.getName()).submit(DynamicShops.container);
+            DynamicShops.data.save(false);
             double oldPrice = getPrice();
             if (buyOperation(p)) {
-                DynamicShops.logger.info(p.getName() + " bought from the shop the shop " + getName());
+                DynamicShops.logger.info(p.getName() + " bought from the shop " + getName());
                 updateSign();
                 Util.message(p, "Purchase Successful.");
                 if (oldPrice != getPrice()) {
-                    Util.message(p, "The price has changed to " + DynamicShops.economy.getDefaultCurrency().getSymbol() + getPrice());
+                    Util.message(p, "The price has changed to " + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getPrice());
                 }
-                DynamicShops.data.save(false);
+                recentlyUsed.add(p);
                 return true;
             } else {
                 DynamicShops.logger.debug(p.getName() + " attempted to buy from the shop " + getName() + " but failed due to a buy operation error");
@@ -138,15 +164,21 @@ public abstract class Shop {
 
     public boolean sell(Player p) {
         if (canSell && p.hasPermission("dynamicshops.sell." + getName())) {
+            if (recentlyUsed.contains(p)) {
+                DynamicShops.logger.trace("Antispam prevented " + p.getName() + " buying from shop " + getName());
+                return false;
+            }
+            Task task = Task.builder().execute(new RemoveFromRecentlyUsedTask(p)).delay(250, TimeUnit.MILLISECONDS).name("Shop " + getName() + " antispam task for player" + p.getName()).submit(DynamicShops.container);
+            DynamicShops.data.save(false);
             double oldPrice = getPrice();
             if (sellOperation(p)) {
                 DynamicShops.logger.info(p.getName() + " sold to the shop " + getName());
                 updateSign();
                 Util.message(p, "Sell Successful.");
                 if (oldPrice != getPrice()) {
-                    Util.message(p, "The price has changed to " + DynamicShops.economy.getDefaultCurrency().getSymbol() + getPrice());
+                    Util.message(p, "The price has changed to " + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getPrice());
                 }
-                DynamicShops.data.save(false);
+                recentlyUsed.add(p);
                 return true;
             } else {
                 DynamicShops.logger.debug(p.getName() + " attempted to sell to the shop " + getName() + " but failed due to a sell operation error");
@@ -155,6 +187,19 @@ public abstract class Shop {
         }
         DynamicShops.logger.debug(p.getName() + " attempted to sell to the shop " + getName() + " but failed either because they did not have permission or because the shop cannot be sold to.");
         return false;
+    }
+
+    private class RemoveFromRecentlyUsedTask implements Consumer<Task> {
+        private Player p;
+
+        public RemoveFromRecentlyUsedTask(Player p) {
+            this.p = p;
+        }
+
+        @Override
+        public void accept(Task t) {
+            recentlyUsed.remove(p);
+        }
     }
 
     public void setSign() {
@@ -178,7 +223,7 @@ public abstract class Shop {
                 data.setElement(1, Text.of("???"));
             }
         }
-        data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toString() + getPrice()));
+        data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getPrice()));
         if (!signTile.offer(data).isSuccessful()) {
             DynamicShops.logger.error("Could not set the sign of shop " + getName() + ". Data transaction failed");
         }
@@ -191,7 +236,7 @@ public abstract class Shop {
             return;
         }
         SignData data = signTile.get(SignData.class).get();
-        data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toString() + getPrice()));
+        data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getPrice()));
         if (!signTile.offer(data).isSuccessful()) {
             DynamicShops.logger.error("Could not set the sign of shop " + getName() + ". Data transaction failed");
         }

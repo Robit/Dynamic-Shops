@@ -10,10 +10,10 @@ import io.github.rm2023.dynamicshops.shop.Shop;
 
 public class ShopSell {
     @Listener
-    public void ShopSellEvent(InteractBlockEvent.Primary event, @First Player player) {
+    public void ShopSellEvent(InteractBlockEvent.Secondary.MainHand event, @First Player player) {
         Shop shop = DynamicShops.data.getShop(event.getTargetBlock().getLocation().orElse(null));
         if (shop != null) {
-            shop.buy(player);
+            shop.sell(player);
         }
     }
 }

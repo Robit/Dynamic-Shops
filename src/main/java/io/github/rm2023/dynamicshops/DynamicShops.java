@@ -17,6 +17,7 @@
 
 package io.github.rm2023.dynamicshops;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -36,6 +37,9 @@ import org.spongepowered.api.text.Text;
 import com.google.inject.Inject;
 
 import io.github.rm2023.dynamicshops.commands.CreateShopCommand;
+import io.github.rm2023.dynamicshops.commands.MainCommand;
+import io.github.rm2023.dynamicshops.commands.ResetPriceCommand;
+import io.github.rm2023.dynamicshops.commands.SetPriceCommand;
 import io.github.rm2023.dynamicshops.data.ShopData;
 import io.github.rm2023.dynamicshops.listeners.ShopAdjust;
 import io.github.rm2023.dynamicshops.listeners.ShopBreak;
@@ -47,14 +51,18 @@ import io.github.rm2023.dynamicshops.listeners.ShopSell;
 @Plugin(id = "dynamicshops", name = "Dynamic Shops", version = "0.0.0", description = "Provides admin shops which follow a logistic function for price setting.")
 public class DynamicShops {
     @Inject
-    public static Logger logger;
+    private Logger logger_;
     @Inject
+    private PluginContainer container_;
+    public static Logger logger;
     public static PluginContainer container;
     public static ShopData data;
     public static EconomyService economy;
 
     @Listener
     public void onStart(GameStartedServerEvent event) {
+        logger = logger_;
+        container = container_;
         Optional<ProviderRegistration<EconomyService>> economyMaybe = Sponge.getServiceManager().getRegistration(EconomyService.class);
         if (!economyMaybe.isPresent()) {
             logger.error("Dynamic Shops REQUIRES an Economy plugin in order to function. Its functionality has been disabled.");
@@ -64,14 +72,18 @@ public class DynamicShops {
         economy = economyMaybe.get().getProvider();
         data = new ShopData();
 
-        CommandSpec createShop = CommandSpec.builder().description(Text.of("Creates a dynamic shop whose price changes based on how many items have been bought/sold from it.")).permission("dynamicshops.admin").arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("shopName"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("minPrice"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("maxPrice"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("priceChangeRate"))), GenericArguments.optional(GenericArguments.string(Text.of("buyOnly/sellOnly/initialPrice/command")))).executor(new CreateShopCommand()).build();
-        CommandSpec createStaticShop = CommandSpec.builder().description(Text.of("Creates a static shop whose price doesn't change.")).permission("dynamicshops.admin").arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("shopName"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("price"))), GenericArguments.optional(GenericArguments.string(Text.of("buyOnly/sellOnly/initialPrice/command")))).executor(new CreateShopCommand()).build();
-        CommandSpec setPrice = CommandSpec.builder().description(Text.of("Sets the price of a shop.")).permission("dynamicshops.admin").arguments(GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("price")))).build();
-        CommandSpec resetPrice = CommandSpec.builder().description(Text.of("Resets the price of a shop")).permission("dynamicshops.admin").build();
+        ArrayList<String> suggestions = new ArrayList<String>();
+        suggestions.add("buyOnly");
+        suggestions.add("sellOnly");
 
-        CommandSpec main = CommandSpec.builder().description(Text.of("Main command for DynamicShops")).permission("dynamicshops.admin").child(createShop, "createShop", "create").child(createStaticShop, "createStaticShop", "createStatic").child(setPrice, "setPrice").child(resetPrice, "resetShop", "reset").build();
+        CommandSpec createShop = CommandSpec.builder().description(Text.of("Creates a dynamic shop whose price changes based on how many items have been bought/sold from it.")).permission("dynamicshops.admin").arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("shopName"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("minPrice"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("maxPrice"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("priceChangeRate"))), GenericArguments.optional(GenericArguments.withSuggestions(GenericArguments.string(Text.of("buyOnly/sellOnly/initialPrice")), suggestions))).executor(new CreateShopCommand()).build();
+        CommandSpec createStaticShop = CommandSpec.builder().description(Text.of("Creates a static shop whose price doesn't change.")).permission("dynamicshops.admin").arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("shopName"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("price"))), GenericArguments.optional(GenericArguments.withSuggestions(GenericArguments.string(Text.of("buyOnly/sellOnly")), suggestions))).executor(new CreateShopCommand()).build();
+        CommandSpec createCommandShop = CommandSpec.builder().description(Text.of("Creates a buy only shop that executes a command when its run. Use @p in the command whereever you want to specify a player.")).permission("dynamicshops.admin").arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("shopName"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("initialPrice"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("maxPrice"))), GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("priceChangeRate"))), GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of("command")))).executor(new CreateShopCommand()).build();
+        CommandSpec setPrice = CommandSpec.builder().description(Text.of("Sets the price of a shop.")).permission("dynamicshops.admin").arguments(GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("price")))).executor(new SetPriceCommand()).build();
+        CommandSpec resetPrice = CommandSpec.builder().description(Text.of("Resets the price of a shop")).permission("dynamicshops.admin").executor(new ResetPriceCommand()).build();
 
-        Sponge.getCommandManager().register(this, main, "dynamiceconomy", "de");
+        CommandSpec main = CommandSpec.builder().description(Text.of("Main command for DynamicShops")).permission("dynamicshops.admin").child(createShop, "createShop").child(createStaticShop, "createStaticShop").child(setPrice, "setPrice").child(resetPrice, "resetShop").child(createCommandShop, "createCommandShop").executor(new MainCommand()).build();
+        Sponge.getCommandManager().register(this, main, "dynamicshops", "ds");
 
         Sponge.getEventManager().registerListeners(this, new ShopAdjust());
         Sponge.getEventManager().registerListeners(this, new ShopBreak());
@@ -79,6 +91,7 @@ public class DynamicShops {
         Sponge.getEventManager().registerListeners(this, new ShopChange());
         Sponge.getEventManager().registerListeners(this, new ShopCreate());
         Sponge.getEventManager().registerListeners(this, new ShopSell());
+        logger.info("Dynamic Shops Started");
     }
 
     @Listener

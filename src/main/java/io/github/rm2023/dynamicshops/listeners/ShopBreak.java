@@ -11,6 +11,7 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 
 import io.github.rm2023.dynamicshops.DynamicShops;
 import io.github.rm2023.dynamicshops.shop.Shop;
+import io.github.rm2023.dynamicshops.util.Util;
 
 public class ShopBreak {
     @Listener(order = Order.FIRST)
@@ -22,6 +23,7 @@ public class ShopBreak {
                     Optional<Player> p = event.getCause().first(Player.class);
                     if (p.isPresent() && p.get().hasPermission("dynamiceconomy.admin")) {
                         DynamicShops.data.removeShop(shop);
+                        Util.message(p.get(), "The shop " + shop.getName() + " was deleted.");
                         DynamicShops.logger.info("Removed shop " + shop.getName() + " due to a block break event caused by " + p.get().getName());
                     } else {
                         DynamicShops.logger.debug("Prevented ChangeBlockEvent at location of " + shop.getName());

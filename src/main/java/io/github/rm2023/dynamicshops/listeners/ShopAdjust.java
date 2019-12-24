@@ -1,12 +1,14 @@
 package io.github.rm2023.dynamicshops.listeners;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -25,6 +27,9 @@ public class ShopAdjust {
                 Location<World> l = event.getTargetBlock().getLocation().get();
                 Shop shop = DynamicShops.data.getShop(l);
                 if (shop != null) {
+                    if (data.price < 0) {
+                        data.price = shop.getInitial();
+                    }
                     if (shop.setPrice(data.price)) {
                         Util.message(player, "Price changed successfully.");
                         DynamicShops.logger.info("Shop " + shop.getName() + "'s price was changed to " + data.price + " by " + player.getName());
@@ -36,6 +41,19 @@ public class ShopAdjust {
                     Util.message(player, "Invalid Block! Operation cancelled.");
                 }
             }
+        }
+    }
+
+    public static class RemoveDataTask implements Consumer<Task> {
+        private AdjustPriceData data;
+
+        public RemoveDataTask(AdjustPriceData data) {
+            this.data = data;
+        }
+
+        @Override
+        public void accept(Task t) {
+            adjustList.remove(data);
         }
     }
 }

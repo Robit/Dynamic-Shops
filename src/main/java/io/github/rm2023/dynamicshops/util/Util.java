@@ -19,7 +19,6 @@ package io.github.rm2023.dynamicshops.util;
 
 import java.math.BigDecimal;
 
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.cause.EventContextKeys;
@@ -27,12 +26,13 @@ import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.Account;
 import org.spongepowered.api.service.economy.transaction.ResultType;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.format.TextColors;
 
 import io.github.rm2023.dynamicshops.DynamicShops;
 
 public class Util {
-    public static void message(Player p, String m) {
+    public static void message(MessageReceiver p, String m) {
         p.sendMessage(Text.builder("[DynamicShops] " + m).color(TextColors.BLUE).build());
     }
 

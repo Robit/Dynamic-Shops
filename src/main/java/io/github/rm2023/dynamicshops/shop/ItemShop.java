@@ -24,6 +24,8 @@ import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.service.economy.account.Account;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import io.github.rm2023.dynamicshops.DynamicShops;
 import io.github.rm2023.dynamicshops.util.Util;
@@ -37,11 +39,16 @@ public class ItemShop extends Shop {
         this.items = null;
     }
 
+    public ItemShop(String name, Location<World> location, double min, double max, double k, boolean canBuy, boolean canSell, ItemStack items) {
+        super(name, location, min, max, k, canBuy, canSell);
+        this.items = items;
+    }
+
     @Override
     protected boolean buyOperation(Player p) {
         Account playerAccount = DynamicShops.economy.getOrCreateAccount(p.getUniqueId()).orElse(null);
         BigDecimal price = BigDecimal.valueOf(getPrice());
-        if (playerAccount == null || playerAccount.getBalance(DynamicShops.economy.getDefaultCurrency()).compareTo(price) > 0) {
+        if (playerAccount == null || playerAccount.getBalance(DynamicShops.economy.getDefaultCurrency()).compareTo(price) < 0) {
             Util.message(p, "You don't have enough money to purchase this!");
             return false;
         }
@@ -54,7 +61,8 @@ public class ItemShop extends Shop {
             Util.message(p, "Error while withdrawing funds. Please contact an admin.");
             return false;
         }
-        i.offer(items);
+        i.offer(items.copy());
+        offset += 1;
         return true;
     }
 
@@ -67,8 +75,8 @@ public class ItemShop extends Shop {
             return false;
         }
         Inventory i = p.getInventory();
-        if (i.contains(items)) {
-            if (i.containsAny(items)) {
+        if (!i.contains(items)) {
+            if (!i.containsAny(items)) {
                 Util.message(p, "You don't have any items to sell to this shop!");
             } else {
                 Util.message(p, "You need more items to sell to this shop!");
@@ -84,6 +92,7 @@ public class ItemShop extends Shop {
             DynamicShops.logger.error("Attempting to put " + getPrice() + " into " + p.getName() + "'s account failed! Please verify that your DynamicShops.economy plugin is working and contact the dev!");
             return false;
         }
+        offset -= 1;
         return true;
     }
 }

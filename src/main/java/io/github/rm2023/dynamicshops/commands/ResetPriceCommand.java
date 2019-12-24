@@ -1,17 +1,48 @@
 package io.github.rm2023.dynamicshops.commands;
 
+import java.util.concurrent.TimeUnit;
+
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
+
+import io.github.rm2023.dynamicshops.DynamicShops;
+import io.github.rm2023.dynamicshops.listeners.ShopAdjust;
+import io.github.rm2023.dynamicshops.listeners.ShopCreate;
+import io.github.rm2023.dynamicshops.util.AdjustPriceData;
+import io.github.rm2023.dynamicshops.util.CreateShopData;
+import io.github.rm2023.dynamicshops.util.Util;
 
 public class ResetPriceCommand implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        // TODO Auto-generated method stub
-        return null;
+        if (!(src instanceof Player)) {
+            Util.message(src, "This command must be executed by a player.");
+            return CommandResult.empty();
+        }
+        Player p = (Player) src;
+        for (CreateShopData data : ShopCreate.createList) {
+            if (p.equals(data.player)) {
+                Util.message(src, "You’re already in the process of creating a shop! Finish that first!");
+                return CommandResult.empty();
+            }
+        }
+        for (AdjustPriceData data : ShopAdjust.adjustList) {
+            if (p.equals(data.player)) {
+                Util.message(src, "You’re already in the process of adjusting a shop! Finish that first!");
+                return CommandResult.empty();
+            }
+        }
+        Util.message(src, "You are now resetting a shop to its default price. Please right click the shop you want to adjust, or right click any other block to cancel. This operation will automatically cancel in 30 seconds.");
+        AdjustPriceData data = new AdjustPriceData(p, -1);
+        ShopAdjust.adjustList.add(data);
+        Task task = Task.builder().execute(new ShopAdjust.RemoveDataTask(data)).delay(30, TimeUnit.SECONDS).name("ShopAdjust Cancel Task").submit(DynamicShops.container);
+        return CommandResult.success();
     }
 
 }
