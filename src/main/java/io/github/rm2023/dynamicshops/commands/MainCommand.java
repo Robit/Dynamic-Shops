@@ -23,11 +23,14 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 
+import io.github.rm2023.dynamicshops.DynamicShops;
+
 public class MainCommand implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        return CommandResult.empty();
+        src.sendMessage(DynamicShops.helpMessage);
+        return CommandResult.success();
     }
 
 }
