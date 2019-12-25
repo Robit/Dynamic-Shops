@@ -44,7 +44,7 @@ public class CommandShop extends Shop {
     @Override
     protected boolean buyOperation(Player p) {
         Account playerAccount = DynamicShops.economy.getOrCreateAccount(p.getUniqueId()).orElse(null);
-        BigDecimal price = BigDecimal.valueOf(getPrice());
+        BigDecimal price = BigDecimal.valueOf(getBuyPrice());
         if (playerAccount == null || playerAccount.getBalance(DynamicShops.economy.getDefaultCurrency()).compareTo(price) < 0) {
             Util.message(p, "You don't have enough money to purchase this!", true);
             return false;

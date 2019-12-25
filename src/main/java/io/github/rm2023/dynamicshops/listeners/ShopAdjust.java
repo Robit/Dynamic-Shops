@@ -47,7 +47,11 @@ public class ShopAdjust {
                 if (shop != null) {
                     event.setCancelled(true);
                     if (data.price < 0) {
-                        data.price = shop.getInitial();
+                        shop.setOffset(shop.getInitial());
+                        shop.updateSign();
+                        DynamicShops.logger.info("Shop " + shop.getName() + " was reset by " + player.getName());
+                        Util.message(player, "Price reset successfully.", true);
+                        return;
                     }
                     if (shop.setPrice(data.price)) {
                         Util.message(player, "Price changed successfully.", true);
