@@ -47,7 +47,7 @@ public class ItemShop extends Shop {
     @Override
     protected boolean buyOperation(Player p) {
         Account playerAccount = DynamicShops.economy.getOrCreateAccount(p.getUniqueId()).orElse(null);
-        BigDecimal price = BigDecimal.valueOf(getPrice());
+        BigDecimal price = BigDecimal.valueOf(getBuyPrice());
         if (playerAccount == null || playerAccount.getBalance(DynamicShops.economy.getDefaultCurrency()).compareTo(price) < 0) {
             Util.message(p, "You don't have enough money to purchase this!", true);
             return false;
@@ -69,7 +69,7 @@ public class ItemShop extends Shop {
     @Override
     protected boolean sellOperation(Player p) {
         Account playerAccount = DynamicShops.economy.getOrCreateAccount(p.getUniqueId()).orElse(null);
-        BigDecimal price = BigDecimal.valueOf(getPrice());
+        BigDecimal price = BigDecimal.valueOf(getSellPrice());
         if (playerAccount == null) {
             Util.message(p, "You don't have a money account! Contact an admin for more information.", true);
             return false;
@@ -88,8 +88,8 @@ public class ItemShop extends Shop {
             return false;
         }
         if (!Util.deposit(playerAccount, DynamicShops.economy, price, getName())) {
-            Util.message(p, "Error while depositing " + getPrice() + " into account. Please screenshot this and contact an admin for compensation. Admin, there should be an ERROR in the server log corrosponding to this failure. Please verify this, compensate the player, and contact the dev for support.", true);
-            DynamicShops.logger.error("Attempting to put " + getPrice() + " into " + p.getName() + "'s account failed! Please verify that your DynamicShops.economy plugin is working and contact the dev!");
+            Util.message(p, "Error while depositing " + getSellPrice() + " into account. Please screenshot this and contact an admin for compensation. Admin, there should be an ERROR in the server log corrosponding to this failure. Please verify this, compensate the player, and contact the dev for support.", true);
+            DynamicShops.logger.error("Attempting to put " + getSellPrice() + " into " + p.getName() + "'s account failed! Please verify that your DynamicShops.economy plugin is working and contact the dev!");
             return false;
         }
         offset -= 1;

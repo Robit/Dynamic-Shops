@@ -106,8 +106,8 @@ public class CreateShopCommand implements CommandExecutor {
         if (!Double.isNaN(initialPrice)) {
             shop.setPrice(initialPrice);
         }
-        initialPrice = shop.getPrice();
-        Util.message(p, "You are creating a shop named " + name + " which will initially buy/sell the item stack (" + hand.getQuantity() + " " + hand.getType().getName() + ") in your hand for " + prefix + initialPrice + " with a minimum price of " + prefix + min + " and a maximum price of " + prefix + max + ".", false);
+        initialPrice = (shop.getSellPrice() + shop.getBuyPrice()) / 2;
+        Util.message(p, "You are creating a shop named " + name + " which will initially buy/sell the item stack (" + hand.getQuantity() + " " + hand.getType().getName() + ") in your hand for an average of " + prefix + initialPrice + " with a minimum price of " + prefix + min + " and a maximum price of " + prefix + max + ".", false);
         if (!shop.getCanBuy()) {
             Util.message(src, "However, this shop will only sell items.", false);
         }
