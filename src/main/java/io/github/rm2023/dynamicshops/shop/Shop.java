@@ -238,20 +238,18 @@ public abstract class Shop {
         if (canBuy) {
             if (canSell) {
                 data.setElement(1, Text.of("Buy/Sell"));
-                data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBuyPrice() + "/" + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getSellPrice()));
             } else {
                 data.setElement(1, Text.of("Buy"));
-                data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBuyPrice()));
             }
         } else {
             if (canSell) {
                 data.setElement(1, Text.of("Sell"));
-                data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getSellPrice()));
             }
         }
         if (!signTile.offer(data).isSuccessful()) {
-            DynamicShops.logger.error("Could not set the sign of shop " + getName() + ". Data transaction failed");
+            DynamicShops.logger.error("Could not set the sign of shop " + getName() + ". Data transaction failed (perhaps the price is too high to render on a sign?)");
         }
+        updateSign();
     }
 
     public void updateSign() {
@@ -266,7 +264,12 @@ public abstract class Shop {
         SignData data = signTile.get(SignData.class).get();
         if (canBuy) {
             if (canSell) {
-                data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBuyPrice() + "/" + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getSellPrice()));
+                if (getBuyPrice() < 9999) {
+                    data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBuyPrice() + "/" + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getSellPrice()));
+                } else {
+                    data.setElement(2, Text.of("B " + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBuyPrice()));
+                    data.setElement(3, Text.of("S " + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getSellPrice()));
+                }
             } else {
                 data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBuyPrice()));
             }
@@ -276,7 +279,7 @@ public abstract class Shop {
             }
         }
         if (!signTile.offer(data).isSuccessful()) {
-            DynamicShops.logger.error("Could not set the sign of shop " + getName() + ". Data transaction failed");
+            DynamicShops.logger.error("Could not set the sign of shop " + getName() + ". Data transaction failed (perhaps the price is too high to render on a sign?)");
         }
     }
 
