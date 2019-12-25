@@ -238,7 +238,7 @@ public abstract class Shop {
         if (canBuy) {
             if (canSell) {
                 data.setElement(1, Text.of("Buy/Sell"));
-                data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBuyPrice() + "/" + Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getSellPrice())));
+                data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBuyPrice() + "/" + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getSellPrice()));
             } else {
                 data.setElement(1, Text.of("Buy"));
                 data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBuyPrice()));
@@ -266,7 +266,7 @@ public abstract class Shop {
         SignData data = signTile.get(SignData.class).get();
         if (canBuy) {
             if (canSell) {
-                data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBuyPrice() + "/" + Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getSellPrice())));
+                data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBuyPrice() + "/" + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getSellPrice()));
             } else {
                 data.setElement(2, Text.of(DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBuyPrice()));
             }

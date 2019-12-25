@@ -53,6 +53,7 @@ public class ShopData {
                 try {
                     ItemShop shop = new ItemShop(node.getNode("name").getString(), node.getNode("location").getValue(locationToken), node.getNode("min").getDouble(), node.getNode("max").getDouble(), node.getNode("k").getDouble(), node.getNode("canBuy").getBoolean(), node.getNode("canSell").getBoolean(), node.getNode("items").getValue(TypeTokens.ITEM_SNAPSHOT_TOKEN).createStack());
                     shop.setOffset(node.getNode("offset").getDouble());
+                    shop.setSign();
                     shopList.add(shop);
                 } catch (ObjectMappingException e) {
                     e.printStackTrace();
@@ -62,6 +63,7 @@ public class ShopData {
                 try {
                     CommandShop shop = new CommandShop(node.getNode("name").getString(), node.getNode("location").getValue(locationToken), node.getNode("min").getDouble(), node.getNode("max").getDouble(), node.getNode("k").getDouble(), node.getNode("command").getString());
                     shop.setOffset(node.getNode("offset").getDouble());
+                    shop.setSign();
                     shopList.add(shop);
                 } catch (ObjectMappingException e) {
                     e.printStackTrace();
