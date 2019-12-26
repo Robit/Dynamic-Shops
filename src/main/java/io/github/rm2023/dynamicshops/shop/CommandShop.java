@@ -66,4 +66,19 @@ public class CommandShop extends Shop {
     public String getCommand() {
         return new String(command);
     }
+
+    @Override
+    protected boolean bulkBuyOperation(Player p) {
+        return false;
+    }
+
+    @Override
+    protected boolean bulkSellOperation(Player p) {
+        return false;
+    }
+
+    @Override
+    protected boolean canBulk() {
+        return false;
+    }
 }

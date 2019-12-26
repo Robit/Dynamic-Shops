@@ -163,7 +163,7 @@ public abstract class Shop {
                 DynamicShops.logger.trace("Antispam prevented " + p.getName() + " buying from shop " + getName());
                 return false;
             }
-            Task task = Task.builder().execute(new RemoveFromRecentlyUsedTask(p)).delay(250, TimeUnit.MILLISECONDS).name("Shop " + getName() + " antispam task for player" + p.getName()).submit(DynamicShops.container);
+            Task task = Task.builder().execute(new RemoveFromListTask(p, recentlyUsed)).delay(250, TimeUnit.MILLISECONDS).name("Shop " + getName() + " antispam task for player" + p.getName()).submit(DynamicShops.container);
             DynamicShops.data.save(false);
             double oldPrice = getBuyPrice();
             if (buyOperation(p)) {
@@ -187,10 +187,10 @@ public abstract class Shop {
     public boolean sell(Player p) {
         if (canSell && p.hasPermission("dynamicshops.sell." + getName())) {
             if (recentlyUsed.contains(p)) {
-                DynamicShops.logger.trace("Antispam prevented " + p.getName() + " buying from shop " + getName());
+                DynamicShops.logger.trace("Antispam prevented " + p.getName() + " selling to shop " + getName());
                 return false;
             }
-            Task task = Task.builder().execute(new RemoveFromRecentlyUsedTask(p)).delay(250, TimeUnit.MILLISECONDS).name("Shop " + getName() + " antispam task for player" + p.getName()).submit(DynamicShops.container);
+            Task task = Task.builder().execute(new RemoveFromListTask(p, recentlyUsed)).delay(250, TimeUnit.MILLISECONDS).name("Shop " + getName() + " antispam task for player" + p.getName()).submit(DynamicShops.container);
             DynamicShops.data.save(false);
             double oldPrice = getSellPrice();
             if (sellOperation(p)) {
@@ -211,16 +211,72 @@ public abstract class Shop {
         return false;
     }
 
-    private class RemoveFromRecentlyUsedTask implements Consumer<Task> {
-        private Player p;
+    public boolean bulkBuy(Player p) {
+        if (canBulk() && canBuy && p.hasPermission("dynamicshops.buy." + getName())) {
+            if (recentlyUsed.contains(p)) {
+                DynamicShops.logger.trace("Antispam prevented " + p.getName() + " bulk buying from shop " + getName());
+                return false;
+            }
+            Task task = Task.builder().execute(new RemoveFromListTask(p, recentlyUsed)).delay(250, TimeUnit.MILLISECONDS).name("Shop " + getName() + " antispam task for player" + p.getName()).submit(DynamicShops.container);
+            DynamicShops.data.save(false);
+            double oldPrice = getBuyPrice();
+            if (bulkBuyOperation(p)) {
+                DynamicShops.logger.info(p.getName() + " bulk bought from the shop " + getName());
+                updateSign();
+                Util.message(p, "Purchase Successful.", false);
+                if (oldPrice != getBuyPrice()) {
+                    Util.message(p, "The price has changed to " + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBuyPrice(), false);
+                }
+                recentlyUsed.add(p);
+                return true;
+            } else {
+                DynamicShops.logger.debug(p.getName() + " attempted to bulk buy from the shop " + getName() + " but failed due to a buy operation error (or requires confirmation).");
+                return false;
+            }
+        }
+        DynamicShops.logger.debug(p.getName() + " attempted to bulk buy from the shop " + getName() + " but failed either because they did not have permission or because the shop cannot be bought from.");
+        return false;
+    }
 
-        public RemoveFromRecentlyUsedTask(Player p) {
+    public boolean bulkSell(Player p) {
+        if (canBulk() && canSell && p.hasPermission("dynamicshops.sell." + getName())) {
+            if (recentlyUsed.contains(p)) {
+                DynamicShops.logger.trace("Antispam prevented " + p.getName() + " bulk selling to shop " + getName());
+                return false;
+            }
+            Task task = Task.builder().execute(new RemoveFromListTask(p, recentlyUsed)).delay(250, TimeUnit.MILLISECONDS).name("Shop " + getName() + " antispam task for player" + p.getName()).submit(DynamicShops.container);
+            DynamicShops.data.save(false);
+            double oldPrice = getSellPrice();
+            if (bulkSellOperation(p)) {
+                DynamicShops.logger.info(p.getName() + " bulk sold to the shop " + getName());
+                updateSign();
+                Util.message(p, "Purchase Successful.", false);
+                if (oldPrice != getSellPrice()) {
+                    Util.message(p, "The price has changed to " + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getSellPrice(), false);
+                }
+                recentlyUsed.add(p);
+                return true;
+            } else {
+                DynamicShops.logger.debug(p.getName() + " attempted to bulk sell to the shop " + getName() + " but failed due to a sell operation error (or requires confirmation).");
+                return false;
+            }
+        }
+        DynamicShops.logger.debug(p.getName() + " attempted to bulk sell to the shop " + getName() + " but failed either because they did not have permission or because the shop cannot be bought from.");
+        return false;
+    }
+
+    protected class RemoveFromListTask implements Consumer<Task> {
+        private Player p;
+        private ArrayList<Player> l;
+
+        public RemoveFromListTask(Player p, ArrayList<Player> l) {
             this.p = p;
+            this.l = l;
         }
 
         @Override
         public void accept(Task t) {
-            recentlyUsed.remove(p);
+            l.remove(p);
         }
     }
 
@@ -285,5 +341,11 @@ public abstract class Shop {
 
     protected abstract boolean buyOperation(Player p);
 
+    protected abstract boolean bulkBuyOperation(Player p);
+
     protected abstract boolean sellOperation(Player p);
+
+    protected abstract boolean bulkSellOperation(Player p);
+
+    protected abstract boolean canBulk();
 }
