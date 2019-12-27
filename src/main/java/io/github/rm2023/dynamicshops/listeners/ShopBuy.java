@@ -34,7 +34,7 @@ public class ShopBuy {
             if (player.get(Keys.IS_SNEAKING).orElse(false)) {
                 shop.bulkBuy(player);
             } else {
-                shop.bulkBuy(player);
+                shop.buy(player);
             }
         }
     }

@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.entity.MainPlayerInventory;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.economy.account.Account;
@@ -51,7 +52,7 @@ public class ItemShop extends Shop {
     public ItemShop(String name, Location<World> location, double min, double max, double k, boolean canBuy, boolean canSell, ItemStack items) {
         super(name, location, min, max, k, canBuy, canSell);
         this.items = items.copy();
-        this.bulkMultiplier = items.getMaxStackQuantity() / items.getQuantity();
+        this.bulkMultiplier = Math.max(items.getMaxStackQuantity() / items.getQuantity(), 1);
         this.bulkItems = items.copy();
         this.bulkItems.setQuantity(items.getQuantity() * bulkMultiplier);
     }
@@ -64,7 +65,7 @@ public class ItemShop extends Shop {
             Util.message(p, "You don't have enough money to purchase this!", true);
             return false;
         }
-        Inventory i = p.getInventory();
+        Inventory i = p.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(MainPlayerInventory.class));
         if (!i.canFit(items)) {
             Util.message(p, "Clear some space in your inventory first!", true);
             return false;
@@ -86,7 +87,7 @@ public class ItemShop extends Shop {
             Util.message(p, "You don't have a money account! Contact an admin for more information.", true);
             return false;
         }
-        Inventory i = p.getInventory();
+        Inventory i = p.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(MainPlayerInventory.class));
         if (!i.contains(items)) {
             if (!i.containsAny(items)) {
                 Util.message(p, "You don't have any items to sell to this shop!", true);
@@ -116,7 +117,7 @@ public class ItemShop extends Shop {
             offset += 1;
         }
         offset = oldOffset;
-        return result;
+        return Math.round(result * Math.pow(10, DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits())) / (double) Math.pow(10, DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits());
     }
 
     protected double getBulkSellPrice() {
@@ -127,24 +128,25 @@ public class ItemShop extends Shop {
             offset -= 1;
         }
         offset = oldOffset;
-        return result;
+        return Math.round(result * Math.pow(10, DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits())) / (double) Math.pow(10, DynamicShops.economy.getDefaultCurrency().getDefaultFractionDigits());
     }
 
     @Override
     protected boolean bulkBuyOperation(Player p) {
         if (!bulkBuyConfirm.contains(p)) {
-            Util.message(p, "Bulk buying from this shop will cost " + DynamicShops.economy.getDefaultCurrency().getSymbol() + getBulkBuyPrice() + " and give you " + bulkMultiplier + " times the amount of a normal transaction. Shift click this shop again within 10 seconds to confirm transaction.", false);
+            Util.message(p, "Bulk buying from this shop will cost " + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBulkBuyPrice() + " and give you " + bulkMultiplier + " times the amount of a normal transaction. Shift click this shop again within 10 seconds to confirm transaction.", false);
             bulkBuyConfirm.add(p);
             Task task = Task.builder().execute(new RemoveFromListTask(p, bulkBuyConfirm)).delay(10, TimeUnit.SECONDS).name("Shop " + getName() + " bulk buy confirm cancel task for " + p.getName()).submit(DynamicShops.container);
             return false;
         }
+        bulkBuyConfirm.remove(p);
         Account playerAccount = DynamicShops.economy.getOrCreateAccount(p.getUniqueId()).orElse(null);
         BigDecimal price = BigDecimal.valueOf(getBulkBuyPrice());
         if (playerAccount == null || playerAccount.getBalance(DynamicShops.economy.getDefaultCurrency()).compareTo(price) < 0) {
             Util.message(p, "You don't have enough money to purchase this!", true);
             return false;
         }
-        Inventory i = p.getInventory();
+        Inventory i = p.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(MainPlayerInventory.class));
         if (!i.canFit(bulkItems)) {
             Util.message(p, "Clear some space in your inventory first!", true);
             return false;
@@ -161,18 +163,19 @@ public class ItemShop extends Shop {
     @Override
     protected boolean bulkSellOperation(Player p) {
         if (!bulkSellConfirm.contains(p)) {
-            Util.message(p, "Bulk selling to this shop will give you " + DynamicShops.economy.getDefaultCurrency().getSymbol() + getBulkSellPrice() + " and take " + bulkMultiplier + " times the amount of a normal transaction. Shift right click this shop again within 10 seconds to confirm transaction.", false);
+            Util.message(p, "Bulk selling to this shop will give you " + DynamicShops.economy.getDefaultCurrency().getSymbol().toPlain() + getBulkSellPrice() + " and take " + bulkMultiplier + " times the amount of a normal transaction. Shift right click this shop again within 10 seconds to confirm transaction.", false);
             bulkSellConfirm.add(p);
             Task task = Task.builder().execute(new RemoveFromListTask(p, bulkSellConfirm)).delay(10, TimeUnit.SECONDS).name("Shop " + getName() + " bulk buy confirm cancel task for " + p.getName()).submit(DynamicShops.container);
             return false;
         }
+        bulkSellConfirm.remove(p);
         Account playerAccount = DynamicShops.economy.getOrCreateAccount(p.getUniqueId()).orElse(null);
         BigDecimal price = BigDecimal.valueOf(getBulkSellPrice());
         if (playerAccount == null) {
             Util.message(p, "You don't have a money account! Contact an admin for more information.", true);
             return false;
         }
-        Inventory i = p.getInventory();
+        Inventory i = p.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(MainPlayerInventory.class));
         if (!i.contains(bulkItems)) {
             if (!i.containsAny(bulkItems)) {
                 Util.message(p, "You don't have any items to sell to this shop!", true);
@@ -181,13 +184,13 @@ public class ItemShop extends Shop {
             }
             return false;
         }
-        if (!i.query(QueryOperationTypes.ITEM_STACK_IGNORE_QUANTITY.of(items)).poll(items.getQuantity()).isPresent()) {
+        if (!i.query(QueryOperationTypes.ITEM_STACK_IGNORE_QUANTITY.of(bulkItems)).poll(bulkItems.getQuantity()).isPresent()) {
             Util.message(p, "Error while retrieving items. Please contact an admin if this error persists.", true);
             return false;
         }
         if (!Util.deposit(playerAccount, DynamicShops.economy, price, getName())) {
-            Util.message(p, "Error while depositing " + getSellPrice() + " into account. Please screenshot this and contact an admin for compensation. Admin, there should be an ERROR in the server log corrosponding to this failure. Please verify this, compensate the player, and contact the dev for support.", true);
-            DynamicShops.logger.error("Attempting to put " + getSellPrice() + " into " + p.getName() + "'s account failed! Please verify that your DynamicShops.economy plugin is working and contact the dev!");
+            Util.message(p, "Error while depositing " + getBulkSellPrice() + " into account. Please screenshot this and contact an admin for compensation. Admin, there should be an ERROR in the server log corrosponding to this failure. Please verify this, compensate the player, and contact the dev for support.", true);
+            DynamicShops.logger.error("Attempting to put " + getBulkSellPrice() + " into " + p.getName() + "'s account failed! Please verify that your DynamicShops.economy plugin is working and contact the dev!");
             return false;
         }
         offset -= bulkMultiplier;

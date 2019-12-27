@@ -58,7 +58,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "dynamicshops", name = "Dynamic Shops", version = "1.0.4", description = "Provides admin shops which follow a logistic function for price setting.")
+@Plugin(id = "dynamicshops", name = "Dynamic Shops", version = "1.0.5", description = "Provides admin shops which follow a logistic function for price setting.")
 public class DynamicShops {
     @Inject
     private Logger logger_;
