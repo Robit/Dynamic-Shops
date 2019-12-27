@@ -3,6 +3,8 @@
 
 Tested with the current reccomended 1.12.2 versions of spongeforge, totaleconomy, and forge as of the 11-18-19 (spongeforge-1.12.2-2838-7.1.7.jar, TotalEconomy-1.8.1.jar, and forge-1.12.2-14.23.5.2847-universal.jar)
 
+The mechanics of the shops themselves are pretty simple for players. Left click to buy, shift left click to bulk buy (buy up to a stack of the item being sold at a time), right click to sell, and shift right click to bulk sell (sell up to a stack at a time)
+
 ### PERMISSIONS:
 | Permission                                             | Description                                                                                                                                                                                        |
 |------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
