@@ -38,7 +38,7 @@ public class ShopBreak {
                 Shop shop = DynamicShops.data.getShop(transaction.getOriginal().getLocation().orElse(null));
                 if (shop != null) {
                     Optional<Player> p = event.getCause().first(Player.class);
-                    if (p.isPresent() && p.get().hasPermission("dynamiceconomy.admin")) {
+                    if (p.isPresent() && p.get().hasPermission("dynamicshops.admin")) {
                         DynamicShops.data.removeShop(shop);
                         Util.message(p.get(), "The shop " + shop.getName() + " was deleted.", false);
                         DynamicShops.logger.info("Removed shop " + shop.getName() + " due to a block break event caused by " + p.get().getName());
