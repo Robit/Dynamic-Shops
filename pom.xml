@@ -9,7 +9,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <artifactId>dynamicshops</artifactId>
 
     <name>Dynamic Shops</name>
-    <version>0.0.0</version>
+    <version>1.0.6</version>
 
     <repositories>
         <repository>
